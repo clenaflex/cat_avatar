@@ -1,0 +1,1 @@
+g++ -o cat_eye_circle cat_eye_circle.cpp -I/path/to/opencv/include -L/path/to/opencv/lib -lopencv_core -lopencv_highgui  -lopencv_objdetect -lopencv_features2d -lopencv_imgproc
