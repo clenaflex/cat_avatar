@@ -40,6 +40,7 @@ int main(int argc, char** argv) {
     // 楕円フィッティング
     cv::RotatedRect box = cv::fitEllipse(pointsf);
     // 楕円の描画
+    cout << box.center << box.size << box.angle <<endl;
     cv::ellipse(img_in, box, cv::Scalar(0,0,255), 2, CV_AA);
   }
 
