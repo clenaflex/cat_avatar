@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
   
   cv::Mat img_sobel;
   norm.convertTo(img_sobel, CV_8U, -255.0 / sob_max, 255);
-
+  cv::imwrite("img_sobel.jpg",img_sobel);
   cv::Mat gray_img, bin_img;
   //cv::cvtColor(img_sobel, gray_img, CV_BGR2GRAY);
 

@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
   dst_img = src_img.clone();
   cv::cvtColor(src_img, work_img, CV_BGR2GRAY);
   cv::Canny(work_img, work_img, 50, 200, 3);
-  
+  cv::imwrite("img_canny.jpg", work_img);
   // 確率的Hough変換
   std::vector<cv::Vec4i> lines;
   // 入力画像，出力，距離分解能，角度分解能，閾値，線分の最小長さ，
