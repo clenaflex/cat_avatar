@@ -4,6 +4,7 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace std;
 
@@ -34,20 +35,23 @@ int main(int argc, char** argv) {
   for(int i = 0; i < contours.size(); ++i) {
     size_t count = contours[i].size();
     if(count < 100 || count > 1000) continue; // （小さすぎる|大きすぎる）輪郭を除外
-
+    cv::Mat org_img = img_in.clone();
     cv::Mat pointsf;
     cv::Mat(contours[i]).convertTo(pointsf, CV_32F);
     // 楕円フィッティング
     cv::RotatedRect box = cv::fitEllipse(pointsf);
     // 楕円の描画
-    cout << box.center << box.size << box.angle <<endl;
-    cv::ellipse(img_in, box, cv::Scalar(0,0,255), 2, CV_AA);
+    cout << i << ","<< count << box.center << box.size << box.angle << endl;
+    cv::ellipse(org_img, box, cv::Scalar(0,0,255), 2, CV_AA);
+    std::string filename = boost::lexical_cast<string>(i);
+    filename += ".jpg";
+    cv::imwrite(filename, org_img);
   }
-
-  cv::namedWindow("fit ellipse", CV_WINDOW_AUTOSIZE|CV_WINDOW_FREERATIO);
-  cv::imshow("fit ellipse", img_in);
-  cv::imwrite("eye_circle.jpg", img_in);
-  cv::waitKey(0);
+  cout << "OK!!" << endl;
+  //cv::namedWindow("fit ellipse", CV_WINDOW_AUTOSIZE|CV_WINDOW_FREERATIO);
+  //cv::imshow("fit ellipse", img_in);
+  //cv::imwrite("eye_circle.jpg", img_in);
+  //cv::waitKey(0);
 
   return 1;
 }
