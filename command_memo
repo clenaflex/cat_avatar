@@ -1,3 +1,12 @@
 g++ -o cat_eye_circle_sobel cat_eye_circle_sobel.cpp -I/path/to/opencv/include -L/path/to/opencv/lib -lopencv_core -lopencv_highgui  -lopencv_objdetect -lopencv_features2d -lopencv_imgproc
 
 g++ -o cat_ear_line_canny cat_ear_line_canny.cpp -I/path/to/opencv/include -L/path/to/opencv/lib -lopencv_core -lopencv_highgui  -lopencv_objdetect -lopencv_features2d -lopencv_imgproc
+
+
+g++ -o grabcut_test grabcut_test.cpp -I/path/to/opencv/include -L/path/to/opencv/lib -lopencv_core -lopencv_highgui  -lopencv_objdetect -lopencv_features2d -lopencv_imgproc
+
+
+g++ -o cat_detector cat_detector.cpp -I/path/to/opencv/include -L/path/to/opencv/lib -lopencv_core -lopencv_highgui  -lopencv_objdetect
+
+
+g++ -o avatar_generator avatar_generator.cpp -I/path/to/opencv/include -L/path/to/opencv/lib -lopencv_core -lopencv_highgui  -lopencv_objdetect -lopencv_features2d -lopencv_imgproc
