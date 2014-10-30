@@ -8,7 +8,10 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-int int main(int argc, char const *argv[])
+
+
+
+int main(int argc, char const *argv[])
 {
 	/* code */
 	return 0;
