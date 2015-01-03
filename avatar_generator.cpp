@@ -36,7 +36,7 @@ void cat_avatar_face(Mat dst_img, int face_x, int face_y,int face_width,int face
 
 void cat_avatar_ear_line(Mat dst_img,int cross_x,int cross_x, int to_point_x,int face_ellipse[4]){
 	double to_point_y;
-	to_point_y = ellipse_point_calc(face_ellipse[2],face_ellipse[3],face_ellipse[0],face_ellipse[1],to_point_x)
+	to_point_y = ellipse_point_calc(face_ellipse[2],face_ellipse[3],face_ellipse[0],face_ellipse[1],to_point_x);
 	cv::line(dst_img, cv::Point(cross_x, cross_x), cv::Point(to_point_x,to_point_y), cv::Scalar(0,0,255), 2, CV_AA);
 }
 
@@ -67,6 +67,34 @@ void cut_ellipse_img(Mat dst_img,face_ellipse[4]){
 				q[0] = 255;
 				q[1] = 255;
 				q[2] = 255;
+			}
+		}
+	}
+	dst_img = cp_img.clone();
+}
+
+void supplement_eyes_img(Mat dst_img,eye_ellipse[5]){
+	Mat cp_img = dst_img.clone();
+	int dst_width = dst_img.size().width;
+	int dst_height = dst_img.size().height;
+	Mat cut_img = Mat::zeros(Size(dst_width,dst_height), CV_8UC3);
+	cv::ellipse(cut_img, cv::Point(eye_ellipse[0], eye_ellipse[1]), cv::Size(eye_ellipse[2],eye_ellipse[3]), eye_ellipse[4], eye_ellipse[4], eye_ellipse[4] + 360, cv::Scalar(0,0,200),-1, CV_AA);	
+	for(int y = 0 ; y < cut_img.rows; y++){
+		for(int x = 0 ; x < cut_img.cols; x++){
+			Vec3b &p = cut_img.at<uchar>( y, x );
+			if (p[0] == 0 && p[1] == 0 && p[2] == 200){
+				Vec3b &q = cp_img.at<uchar>( y, x );
+				if(x==0){
+					Vec3b &r = cp_img.at<uchar>( y+1, x );
+					q[0] = r[0];
+					q[1] = r[1];
+					q[2] = r[2];
+				}else{
+					Vec3b &r = cp_img.at<uchar>( y, x-1 );
+					q[0] = r[0];
+					q[1] = r[1];
+					q[2] = r[2];
+				}
 			}
 		}
 	}
