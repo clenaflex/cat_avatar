@@ -152,13 +152,20 @@ void draw_eye_two_ellipse(cv::Mat& img,cv::Point pt_lo,cv::Size sz_lo,int theta_
 
   /// 画像，中心座標，（長径・短径），回転角度，円弧開始角度，円弧終了角度，色，線太さ，連結
   cv::ellipse(img,pt_lo, sz_lo,theta_lo,0,360,le_bgr[0], -1, 4);
-  cout << pt_lo << " "<< sz_lo << " "<<  theta_lo << " "<< le_bgr[0] << endl;
+  // cout << pt_lo << " "<< sz_lo << " "<<  theta_lo << " "<< le_bgr[0] << endl;
   cv::ellipse(img,pt_li, sz_li,theta_li,0,360,le_bgr[1], -1, 4);
-  cout << pt_li << " "<< sz_li << " "<<  theta_li << " "<< le_bgr[1] << endl;
+  // cout << pt_li << " "<< sz_li << " "<<  theta_li << " "<< le_bgr[1] << endl;
   cv::ellipse(img,pt_ro, sz_ro,theta_ro,0,360,re_bgr[0], -1, 4);
-  cout << pt_ro << " "<< sz_ro << " "<<  theta_ro << " "<< re_bgr[0] << endl;
+  // cout << pt_ro << " "<< sz_ro << " "<<  theta_ro << " "<< re_bgr[0] << endl;
   cv::ellipse(img,pt_ri, sz_ri,theta_ri,0,360,re_bgr[1], -1, 4);
-  cout << pt_ri << " "<< sz_ri << " "<<  theta_ri << " "<< re_bgr[1] << endl;
+  // cout << pt_ri << " "<< sz_ri << " "<<  theta_ri << " "<< re_bgr[1] << endl;
+}
+
+void draw_mouth(cv::Mat& img,cv::Point pt_m,int w, int h,cv::Scalar c_m){
+  cv::line(img, cv::Point(pt_m.x+w/2, pt_m.y+h/4), cv::Point(pt_m.x+w/2, pt_m.y+h/2), cv::Scalar(0,0,0), 3, 4);  
+  cv::line(img, cv::Point(pt_m.x+w/2, pt_m.y+h/2), cv::Point(pt_m.x+w/4, pt_m.y+5*h/8), cv::Scalar(0,0,0), 3, 4);  
+  cv::line(img, cv::Point(pt_m.x+w/2, pt_m.y+h/2), cv::Point(pt_m.x+w*3/4, pt_m.y+5*h/8), cv::Scalar(0,0,0), 3, 4);  
+  cv::circle(img, cv::Point(pt_m.x+w/2,pt_m.y+h/4),h/8,c_m, -1, CV_AA);
 }
 
 int main(int argc, char** argv) {
@@ -234,6 +241,8 @@ int main(int argc, char** argv) {
    re_bgr[1] = cv::Scalar(0,0,0);
 
    draw_eye_two_ellipse(frame,cv::Point(atoi(argv[21])*5,atoi(argv[22])*5),cv::Size(atoi(argv[23])*5,atoi(argv[24])*5),atoi(argv[25]),cv::Point(atoi(argv[26])*5,atoi(argv[27])*5),cv::Size(atoi(argv[28])*5,atoi(argv[29])*5),atoi(argv[30]),le_bgr,cv::Point(atoi(argv[31])*5,atoi(argv[32])*5),cv::Size(atoi(argv[33])*5,atoi(argv[34])*5),atoi(argv[35]),cv::Point(atoi(argv[36])*5,atoi(argv[37])*5),cv::Size(atoi(argv[38])*5,atoi(argv[39])*5),atoi(argv[40]),re_bgr);
+   cv::Scalar c_m = cv::Scalar(0,255,0);
+   draw_mouth(frame,cv::Point(atoi(argv[41])*5,atoi(argv[42])*5),atoi(argv[43])*5,atoi(argv[44])*5,c_m);
 
    cv::imwrite("test_img.png",frame);
    cv::namedWindow("Capture", CV_WINDOW_AUTOSIZE|CV_WINDOW_FREERATIO);
