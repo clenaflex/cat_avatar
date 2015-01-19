@@ -10,11 +10,12 @@ extern void draw_ear_two_triangle(cv::Mat& img,cv::Point l_pt[3],cv::Scalar l_bg
 extern void draw_eye_two_ellipse(cv::Mat& img,cv::Point pt_lo,cv::Size sz_lo,int theta_lo,cv::Point pt_li,cv::Size sz_li,int theta_li,cv::Scalar le_bgr[2],cv::Point pt_ro,cv::Size sz_ro,int theta_ro,cv::Point pt_ri,cv::Size sz_ri,int theta_ri,cv::Scalar re_bgr[2]);
 extern void draw_mouth(cv::Mat& img,cv::Point pt_m,int w, int h,cv::Scalar c_m);
 extern void calc_tan_two_line(double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4);
-extern void detect_ear_line(cv::Mat& img,int linea[4],int lineb[4]);
-extern void get_color(cv::Mat img,cv:: Point img_point,cv::Scalar color);
+extern int detect_ear_line(cv::Mat& img,int linea[4],int lineb[4]);
+extern void get_color(cv::Mat img,cv:: Point img_point,cv::Scalar color[1]);
 extern void rgb_gray(cv::Mat& img,int threshold);
 extern void k_means(cv::Mat& src_img,int cluster_count);
 extern int cat_classify(cv::Mat& img,cv::Point eye_r,int eye_r_wh,cv::Point eye_l,int eye_l_wh,cv::Point mouth,int mouth_wh,cv::Scalar face_color[3]);
-extern void get_eye_color(cv::Mat eye_img,cv::Point ellipse_pq,int a ,int b,int theta,cv::Scalar eye_color);
-extern void get_ear_color(cv::Mat ear_img,cv::Scalar ear_color);
-extern void get_mouth_color(cv::Mat mouth_img,cv::Scalar mouth_color);
+extern void get_eye_color(cv::Mat eye_img,cv::Point ellipse_pq,int a ,int b,int theta,cv::Scalar eye_color[1]);
+extern void get_ear_color(cv::Mat ear_img,cv::Scalar ear_color[1]);
+extern void get_mouth_color(cv::Mat mouth_img,cv::Scalar mouth_color[1]);
+extern int line_cross_point_y(double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4);

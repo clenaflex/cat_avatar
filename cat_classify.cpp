@@ -12,11 +12,11 @@
 using namespace cv;
 using namespace std;
 
-void get_color(cv::Mat img,cv:: Point img_point,cv::Scalar color){
+void get_color(cv::Mat img,cv:: Point img_point,cv::Scalar color[1]){
 	cv::Mat dst_img = img.clone();
 	cv::Mat3b dotImg = dst_img;
 	Vec3b p = dotImg(img_point);
-	color = cv::Scalar(p[0],p[1],p[2]);
+	color[0] = cv::Scalar(p[0],p[1],p[2]);
 }
 
 
@@ -123,7 +123,7 @@ int cat_classify(cv::Mat& img,cv::Point eye_r,int eye_r_wh,cv::Point eye_l,int e
 	return type;
 }
 
-void get_eye_color(cv::Mat eye_img,cv::Point ellipse_pq,int a ,int b,int theta,cv::Scalar eye_color){
+void get_eye_color(cv::Mat eye_img,cv::Point ellipse_pq,int a ,int b,int theta,cv::Scalar eye_color[1]){
 	int r;
 	cv::Mat dst_img = eye_img.clone();
 	if (a>b){
@@ -133,12 +133,12 @@ void get_eye_color(cv::Mat eye_img,cv::Point ellipse_pq,int a ,int b,int theta,c
 	}
 	get_color(dst_img,cv::Point(ellipse_pq.x + r*cos(theta*180/3.14),ellipse_pq.y + r*sin(theta*180/3.14)),eye_color);
 }
-void get_ear_color(cv::Mat ear_img,cv::Scalar ear_color){
+void get_ear_color(cv::Mat ear_img,cv::Scalar ear_color[1]){
 	cv::Mat dst_img = ear_img.clone();
 	get_color(dst_img,cv::Point(dst_img.cols/2,dst_img.rows/2),ear_color);
 }
 
-void get_mouth_color(cv::Mat mouth_img,cv::Scalar mouth_color){
+void get_mouth_color(cv::Mat mouth_img,cv::Scalar mouth_color[1]){
 	cv::Mat dst_img = mouth_img.clone();
 	get_color(dst_img,cv::Point(dst_img.cols/2,dst_img.rows*2/5),mouth_color);
 }

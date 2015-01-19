@@ -93,3 +93,18 @@ g++ -o objdetect objdetect.cpp -I/path/to/opencv/include -L/path/to/opencv/lib -
 
 
 g++ -o cat_classify cat_classify.cpp -I/path/to/opencv/include -L/path/to/opencv/lib -lopencv_core -lopencv_highgui  -lopencv_objdetect -lopencv_features2d -lopencv_imgproc
+
+
+cat_color_mike
+
+
+g++ -o cat_color_mike cat_color_mike.cpp -I/path/to/opencv/include -L/path/to/opencv/lib -lopencv_core -lopencv_highgui  -lopencv_objdetect -lopencv_features2d -lopencv_imgproc
+
+
+g++ -o rgb_gray rgb_gray.cpp -I/path/to/opencv/include -L/path/to/opencv/lib -lopencv_core -lopencv_highgui  -lopencv_objdetect -lopencv_features2d -lopencv_imgproc
+
+
+g++ -o old_canny_line old_canny_line.cpp -I/path/to/opencv/include -L/path/to/opencv/lib -lopencv_core -lopencv_highgui  -lopencv_objdetect -lopencv_features2d -lopencv_imgproc
+
+
+g++ -o new_canny_line new_canny_line.cpp -I/path/to/opencv/include -L/path/to/opencv/lib -lopencv_core -lopencv_highgui  -lopencv_objdetect -lopencv_features2d -lopencv_imgproc

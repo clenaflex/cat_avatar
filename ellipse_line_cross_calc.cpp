@@ -52,6 +52,7 @@ void line_cross_point(double x1,double y1,double x2,double y2,double x3,double y
   double y = la * x + lb;
   ans[0] = x;
   ans[1] = y;
+  cout << "cross_point:" << ans[0] << " " << ans[1] << endl;
 }
 
 
