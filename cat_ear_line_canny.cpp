@@ -53,30 +53,32 @@ void detect_ear_line(cv::Mat& img,int linea[4],int lineb[4]){
           lineb[1] = lb[1];
           lineb[2] = lb[2];
           lineb[3] = lb[3];
+          cout << "line OK" << endl;
         }
       }
 
     }
   }
-  cv::line(org_img, cv::Point(linea[0], linea[1]), cv::Point(linea[2], linea[3]), cv::Scalar(0,0,255), 2, CV_AA);
-  cv::line(org_img, cv::Point(lineb[0], lineb[1]), cv::Point(lineb[2], lineb[3]), cv::Scalar(0,0,255), 2, CV_AA);
+  cout << "line_detect_finished" << endl;
+  // cv::line(org_img, cv::Point(linea[0], linea[1]), cv::Point(linea[2], linea[3]), cv::Scalar(0,0,255), 2, CV_AA);
+  // cv::line(org_img, cv::Point(lineb[0], lineb[1]), cv::Point(lineb[2], lineb[3]), cv::Scalar(0,0,255), 2, CV_AA);
   cout << "("<< linea[0] << "," << linea[1] << ")" << " to " << "("<< linea[2] << "," << linea[3] << ")" << endl;
   cout << "("<< lineb[0] << "," << lineb[1] << ")" << " to " << "("<< lineb[2] << "," << lineb[3] << ")" << endl;
-  img = org_img.clone();
+  // img = org_img.clone();
   // std::string filename = boost::lexical_cast<string>(i);
   // filename += ".jpg";
 }
 
-int main(int argc, char** argv) {
-  cv::Mat src_img = cv::imread(argv[1], 1);
-  if(!src_img.data) return -1;
-  int linea[4];
-  int lineb[4];
-  detect_ear_line(src_img,linea,lineb);  
-  cv::namedWindow("Ear", CV_WINDOW_AUTOSIZE|CV_WINDOW_FREERATIO);
-  std::string filename = "result.jpg";
-  cv::imshow("Ear",src_img);
-  cv::imwrite(filename,src_img);
-  cv::waitKey(0);
-}
+// int main(int argc, char** argv) {
+//   cv::Mat src_img = cv::imread(argv[1], 1);
+//   if(!src_img.data) return -1;
+//   int linea[4];
+//   int lineb[4];
+//   detect_ear_line(src_img,linea,lineb);  
+//   cv::namedWindow("Ear", CV_WINDOW_AUTOSIZE|CV_WINDOW_FREERATIO);
+//   std::string filename = "result.jpg";
+//   cv::imshow("Ear",src_img);
+//   cv::imwrite(filename,src_img);
+//   cv::waitKey(0);
+// }
 

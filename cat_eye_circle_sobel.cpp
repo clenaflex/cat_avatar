@@ -124,15 +124,15 @@ void detect_eye_ellipse(cv::Mat& img,double eye[5]){
 }
 
 
-int main(int argc, char** argv) {
-  cv::Mat img_in = cv::imread(argv[1], 1);
-  double eye[5];
-  detect_eye_ellipse(img_in,eye);
-  cv::ellipse(img_in,cv::Point(eye[0],eye[1]), cv::Size(eye[2],eye[3]), eye[4] ,0,360,cv::Scalar(0,0,255), 3, 4);
-  cv::namedWindow("Eye", CV_WINDOW_AUTOSIZE|CV_WINDOW_FREERATIO);
-  // std::string filename = boost::lexical_cast<string>(変数);
-  std::string filename = "result.jpg";
-  cv::imshow("Eye", img_in);
-  cv::imwrite(filename,img_in);
-  cv::waitKey(0);
-}
+// int main(int argc, char** argv) {
+//   cv::Mat img_in = cv::imread(argv[1], 1);
+//   double eye[5];
+//   detect_eye_ellipse(img_in,eye);
+//   cv::ellipse(img_in,cv::Point(eye[0],eye[1]), cv::Size(eye[2],eye[3]), eye[4] ,0,360,cv::Scalar(0,0,255), 3, 4);
+//   cv::namedWindow("Eye", CV_WINDOW_AUTOSIZE|CV_WINDOW_FREERATIO);
+//   // std::string filename = boost::lexical_cast<string>(変数);
+//   std::string filename = "result.jpg";
+//   cv::imshow("Eye", img_in);
+//   cv::imwrite(filename,img_in);
+//   cv::waitKey(0);
+// }
