@@ -22,6 +22,18 @@ int line_cross_point_y(double x1,double y1,double x2,double y2,double x3,double 
   return y;
 }
 
+int line_cross_point_x(double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4){
+  double la = (y2 - y1)/(x2 - x1);
+  double lb = y2 - la * x2;
+  double lc = (y4 - y3)/(x4 - x3);
+  double ld = y4 - lc * x4;
+  double x = (ld - lb) / (la - lc);
+  double y = la * x + lb;
+  return x;
+}
+
+
+
 double calc_tan_two_line(double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4){
   double la = (y2 - y1)/(x2 - x1);
   // double lb = y2 - la * x2;
@@ -36,6 +48,7 @@ int detect_ear_line(cv::Mat& img,int linea[4],int lineb[4]){
   cv::Mat org_img = img.clone();
   cv::Mat origin_img = img.clone();
   int img_height = org_img.rows;
+  int image_width = img_height; 
   cv::cvtColor(img, img, CV_BGR2GRAY);
   cv::Canny(img,img, 50, 100, 3);
   // 確率的Hough変換
@@ -67,9 +80,9 @@ int detect_ear_line(cv::Mat& img,int linea[4],int lineb[4]){
   // org_img = origin_img.clone();
 
       // cout << tan_calc << endl;
-      if(0.5 < tan_calc && tan_calc <2){
+      if(0.7 < tan_calc && tan_calc <2){
         if(tan_calc > tan_ans){
-          if(line_cross_point_y(la[0],la[1],la[2],la[3],lb[0],lb[1],lb[2],lb[3]) < img_height*1/10 && line_cross_point_y(la[0],la[1],la[2],la[3],lb[0],lb[1],lb[2],lb[3]) >0){
+          if(line_cross_point_y(la[0],la[1],la[2],la[3],lb[0],lb[1],lb[2],lb[3]) < img_height*1/10 && line_cross_point_y(la[0],la[1],la[2],la[3],lb[0],lb[1],lb[2],lb[3]) >0 && 0 < line_cross_point_x(la[0],la[1],la[2],la[3],lb[0],lb[1],lb[2],lb[3]) && line_cross_point_x(la[0],la[1],la[2],la[3],lb[0],lb[1],lb[2],lb[3]) < image_width){
           tan_ans = tan_calc;
           linea[0] = la[0];
           linea[1] = la[1];

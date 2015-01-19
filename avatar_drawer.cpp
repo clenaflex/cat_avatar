@@ -25,12 +25,41 @@ int reverse_point_x(int point_x,int width){
 	return reverse_point;
 }
 
+void draw_outline(cv::Mat& avatar,cv::Scalar background_color){
+	cv::Mat3b dotImg = avatar;
+	for(int y = 1 ; y < avatar.rows-1; y++){
+		for(int x = 1 ; x < avatar.cols-1; x++){
+			Vec3b p = dotImg(cv::Point(x,y));
+			Vec3b u = dotImg(cv::Point(x,y-1));
+			Vec3b d = dotImg(cv::Point(x,y+1));
+			Vec3b l = dotImg(cv::Point(x-1,y));
+			Vec3b r = dotImg(cv::Point(x+1,y));
+
+			if (p[0] !=  background_color[0]  && p[1] !=  background_color[1] && p[2] !=  background_color[2]){
+				if(u[0] == background_color[0]  && u[1] == background_color[1] && u[2] == background_color[2]){
+					dotImg(cv::Point(x,y)) = cv::Vec3b(0,0,0);
+				}
+				if(d[0] == background_color[0]  && d[1] == background_color[1] && d[2] == background_color[2]){
+					dotImg(cv::Point(x,y)) = cv::Vec3b(0,0,0);
+				}
+				if(l[0] == background_color[0]  && l[1] == background_color[1] && l[2] == background_color[2]){
+					dotImg(cv::Point(x,y)) = cv::Vec3b(0,0,0);
+				}
+				if(r[0] == background_color[0]  && r[1] == background_color[1] && r[2] == background_color[2]){
+					dotImg(cv::Point(x,y)) = cv::Vec3b(0,0,0);
+				}
+			}
+		}
+	}	
+}
+
 void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point ear_l,int ear_l_wh,cv::Point eye_r,int eye_r_wh,cv::Point eye_l,int eye_l_wh,cv::Point mouth,int mouth_wh){
 	// cols:width
 	// rows:height
 	// rは向かって左、猫からしたら右
 	cv::Mat dst_cat_face_img = cat_face_img.clone();
-	cv::Mat avatar(dst_cat_face_img.rows,dst_cat_face_img.cols,CV_8UC3,cv::Scalar(194,194,194));
+	cv::Scalar background_color = cv::Scalar(194,194,194);
+	cv::Mat avatar(dst_cat_face_img.rows,dst_cat_face_img.cols,CV_8UC3,background_color);
 	int p, q, a, b;
 	a = dst_cat_face_img.cols*0.9/2;
 	p = dst_cat_face_img.cols/2;
@@ -45,6 +74,11 @@ void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point e
 	//顔の色を先に取得、及びタイプ取得
 	cv::Scalar face_color[3];
 	int type = cat_classify(dst_cat_face_img,eye_r,eye_r_wh,eye_l,eye_l_wh,mouth,mouth_wh,face_color);
+	// type = 10;
+	cout << type << endl;
+	if(type == 20){
+		face_color[2] = cv::Scalar(255,255,255);
+	}
 
 
   // (x,y)=(200,200), (width,height)=(100,100)
@@ -68,7 +102,7 @@ void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point e
 	int r_linea[4],r_lineb[4];
 	int l_linea[4],l_lineb[4];
 	int sc_flag_r,sc_flag_l;
-	//sc_flag は3以上であれば耳の形状の検出が成功している
+	//sc_flag は3以上であれば耳or目の形状の検出が成功している
 	sc_flag_r = detect_ear_line(ear_r_img,r_linea,r_lineb);
 	sc_flag_l =detect_ear_line(ear_l_img,l_linea,l_lineb);
 
@@ -130,7 +164,27 @@ void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point e
 		r_lineb[2] = reverse_point_x(l_lineb[2],img_width);
 		r_lineb[3] = l_lineb[3];
 		cout << "Only l detect success" << endl;
-	} 
+	} else{
+		l_linea[0] = ear_l.x+ear_l_wh*0.8;
+		l_linea[1] = ear_l.y+ear_l_wh*0.2;
+		l_linea[2] = ear_l.x+ear_l_wh*0.1;
+		l_linea[3] = ear_l.y+ear_l_wh;
+		l_lineb[0] = ear_l.x+ear_l_wh*0.8;
+		l_lineb[1] = ear_l.y+ear_l_wh*0.2;
+		l_lineb[2] = ear_l.x+ear_l_wh*0.75;
+		l_lineb[3] = ear_l.y+ear_l_wh;
+
+		r_linea[0] = reverse_point_x(l_linea[0],img_width);
+		r_linea[1] = l_linea[1];
+		r_linea[2] = reverse_point_x(l_linea[2],img_width);
+		r_linea[3] = l_linea[3];
+		r_lineb[0] = reverse_point_x(l_lineb[0],img_width);
+		r_lineb[1] = l_lineb[1];
+		r_lineb[2] = reverse_point_x(l_lineb[2],img_width);
+		r_lineb[3] = l_lineb[3];
+
+		cout << "Both ear detect failed" << endl;
+	}
 
 	double ans[12];
 	ellipse_ear_calc(p,q,a,b,l_linea[0],l_linea[1],l_linea[2],l_linea[3],l_lineb[0],l_lineb[1],l_lineb[2],l_lineb[3],r_linea[0],r_linea[1],r_linea[2],r_linea[3],r_lineb[0],r_lineb[1],r_lineb[2],r_lineb[3],ans);
@@ -154,12 +208,50 @@ void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point e
     r_bgr[0] = face_color[0];
     r_bgr[1] = r_ear_color[0];
 
+
+
+    if(type == 10){
+    	l_bgr[0] = face_color[0];
+    	r_bgr[0] = face_color[0];
+     }
+
     draw_ear_two_triangle(avatar,l_pt,l_bgr,r_pt,r_bgr);
     draw_face_ellipse(avatar,p,q,a,b,face_color,type);
 
 	double r_eye[5],l_eye[5];
-	detect_eye_ellipse(eye_r_img,r_eye);
-	detect_eye_ellipse(eye_l_img,l_eye);
+	sc_flag_r = detect_eye_ellipse(eye_r_img,r_eye);
+	sc_flag_l = detect_eye_ellipse(eye_l_img,l_eye);
+
+	if (sc_flag_r > 2 && sc_flag_l > 2 ){
+		cout << "Both eye detect success" << endl;
+	}else if(sc_flag_r > 2 && sc_flag_l < 3){
+		cout << "Only r eye detect success" << endl;
+		l_eye[0] = reverse_point_x(eye_r.x + r_eye[0],img_width)-eye_l.x;
+		l_eye[1] = r_eye[1] + + eye_r.y - eye_l.y;
+		l_eye[2] = r_eye[2];
+		l_eye[3] = r_eye[3];
+		l_eye[4] = 180 - r_eye[4];
+	}else if(sc_flag_r < 3 && sc_flag_l > 2){
+		cout << "Only l eye detect success" << endl;
+		r_eye[0] = reverse_point_x(eye_l.x + l_eye[0],img_width)-eye_r.x;
+		r_eye[1] = l_eye[1] + eye_l.y - eye_r.y;
+		r_eye[2] = l_eye[2];
+		r_eye[3] = l_eye[3];
+		r_eye[4] = 180 - l_eye[4];
+	}else{
+		cout << "Both eye detect failed" << endl;
+		l_eye[0] = eye_l_wh/2;
+		l_eye[1] = eye_l_wh/2;
+		l_eye[2] = eye_l_wh*0.8/2;
+		l_eye[3] = eye_l_wh*0.3/2;
+		l_eye[4] = -10;
+
+		r_eye[0] = reverse_point_x(eye_l.x + l_eye[0],img_width)-eye_r.x;
+		r_eye[1] = l_eye[1] + eye_l.y - eye_r.y;
+		r_eye[2] = eye_l_wh*0.8/2;
+		r_eye[3] = eye_l_wh*0.3/2;
+		r_eye[4] = 10;
+	}
 
 	cv::Scalar l_eye_color[1];
 	cv::Scalar r_eye_color[1];
@@ -180,7 +272,7 @@ void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point e
     get_mouth_color(mouth_img,mouth_color);
     cv::Scalar c_m = mouth_color[0];
     draw_mouth(avatar,mouth,mouth_wh,mouth_wh,c_m);
-
+    draw_outline(avatar,background_color);
     cv::imwrite("avatar.png",avatar);
     cv::namedWindow("avatar", CV_WINDOW_AUTOSIZE|CV_WINDOW_FREERATIO);
     cv::imshow("avatar", avatar);

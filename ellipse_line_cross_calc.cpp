@@ -11,6 +11,15 @@
 
 using namespace std;
 
+double dist_two_point(double x1,double y1,double x2,double y2){
+ return sqrt( pow( (x1 - x2) ,2 ) + pow( (y1 - y2) ,2));
+}
+
+double calc_tan(double x1,double y1,double x2,double y2){
+  double la = (y2 - y1)/(x2 - x1);
+  return la;
+}
+
 void ellipse_line_cross_calc(double p,double q,double a,double b,double x1,double y1, double x2,double y2,double ans[2]){
   double la = (y2 - y1)/(x2 - x1);
   double lb = y2 - la * x2;
@@ -139,25 +148,72 @@ void draw_ear_two_triangle(cv::Mat& img,cv::Point l_pt[3],cv::Scalar l_bgr[2],cv
   cv::Point pt[3];
   double x;
   double y;
-  //向かって左外
+
+
+  double theta_l = atan(calc_tan( (l_pt[0].x + l_pt[1].x)/2,(l_pt[0].y + l_pt[1].y)/2,l_pt[2].x,l_pt[2].y))*180/3.14;
+  int l_a = dist_two_point( (r_pt[0].x + r_pt[1].x)/2, (r_pt[0].y + r_pt[1].y)/2 ,r_pt[2].x ,r_pt[2].y);
+  int l_b = dist_two_point(l_pt[0].x,l_pt[0].y,l_pt[1].x,l_pt[1].y)/2;
+  
+  // cv::ellipse(img,cv::Point((l_pt[0].x + l_pt[1].x)/2,(l_pt[0].y + l_pt[1].y)/2), cv::Size(l_a,l_b*1.1),theta_l,0,180,l_bgr[0], -1, 8);
+  // cv::ellipse(img,cv::Point((l_pt[0].x + l_pt[1].x)/2,(l_pt[0].y + l_pt[1].y)/2), cv::Size(l_a,l_b*0.9),theta_l,180,360,l_bgr[0], -1, 8);
+
+  //左外
   cv::fillConvexPoly(img, l_pt, 3,l_bgr[0]);
-  //向かって左内
+  cv::Point hl_pt[3];
+  hl_pt[0] = cv::Point( l_pt[2].x-(l_pt[2].x - l_pt[0].x)*2/5 ,l_pt[2].y-(l_pt[2].y - l_pt[0].y)*2/5);
+  hl_pt[1] = cv::Point(l_pt[2].x-(l_pt[2].x - l_pt[1].x)*2/5 ,l_pt[2].y-(l_pt[2].y - l_pt[1].y)*2/5);
+  hl_pt[2] = cv::Point(l_pt[2].x,l_pt[2].y);
+  
+  // cv::fillConvexPoly(img, hl_pt,3,cv::Scalar(194,194,194));
+  // int hl_dist = dist_two_point(hl_pt[0].x,hl_pt[0].y,hl_pt[1].x,hl_pt[1].y);
+  // cv::circle(img, cv::Point( (hl_pt[0].x + hl_pt[1].x)/2,(hl_pt[0].y + hl_pt[1].y)/2), hl_dist*0.98/2, l_bgr[0], -1, 8);
+
+
+  //左内
   x = (l_pt[0].x + l_pt[1].x + l_pt[2].x)/3;
   y = (l_pt[0].y + l_pt[1].y + l_pt[2].y)/3;
   pt[0] = cv::Point((x+l_pt[0].x)/2,(y+l_pt[0].y)/2); 
   pt[1] = cv::Point((x+l_pt[1].x)/2,(y+l_pt[1].y)/2);
   pt[2] = cv::Point((x+l_pt[2].x)/2,(y+l_pt[2].y)/2);
   cv::fillConvexPoly(img, pt, 3,l_bgr[1]);
+  cv::line(img, pt[0], pt[1],cv::Scalar(0,0,0), 2, 4);
+  cv::line(img, pt[1], pt[2],cv::Scalar(0,0,0), 2, 4);
+  cv::line(img, pt[2], pt[0],cv::Scalar(0,0,0), 2, 4);
 
-  //向かって右外
+  // cv::ellipse(img,cv::Point((l_pt[0].x + l_pt[1].x)/2,(l_pt[0].y + l_pt[1].y)/2), cv::Size(l_a/2,l_b/2),theta_l,0,360,l_bgr[1], -1, 8);
+
+  double theta_r = atan(calc_tan( (r_pt[0].x + r_pt[1].x)/2,(r_pt[0].y + r_pt[1].y)/2,r_pt[2].x,r_pt[2].y))*180/3.14;
+  int r_a = dist_two_point((r_pt[0].x + r_pt[1].x)/2,(r_pt[0].y + r_pt[1].y)/2,r_pt[2].x,r_pt[2].y);
+  int r_b = dist_two_point(r_pt[0].x,r_pt[0].y,r_pt[1].x,r_pt[1].y)/2;
+  
+//   cv::ellipse(img,cv::Point((r_pt[0].x + r_pt[1].x)/2,(r_pt[0].y + r_pt[1].y)/2), cv::Size(r_a,r_b*0.9),theta_r,0,180,r_bgr[0], -1, 8);
+// cv::ellipse(img,cv::Point((r_pt[0].x + r_pt[1].x)/2,(r_pt[0].y + r_pt[1].y)/2), cv::Size(r_a,r_b*1.1),theta_r,180,270,r_bgr[0], -1, 8);
+//   cout << "theta_r:" << theta_r << "theta_l:" << theta_l << endl; 
+
+  //右外
   cv::fillConvexPoly(img, r_pt, 3,r_bgr[0]);
-  //向かって右内
+  cv::Point hr_pt[3];
+  hr_pt[0] = cv::Point( r_pt[2].x-(r_pt[2].x - r_pt[0].x)*2/5 ,r_pt[2].y-(r_pt[2].y - r_pt[0].y)*2/5);
+  hr_pt[1] = cv::Point(r_pt[2].x-(r_pt[2].x - r_pt[1].x)*2/5 ,r_pt[2].y-(r_pt[2].y - r_pt[1].y)*2/5);
+  hr_pt[2] = cv::Point(r_pt[2].x,r_pt[2].y);
+
+  // cv::fillConvexPoly(img, hr_pt,3,cv::Scalar(194,194,194));
+  // int hr_dist = dist_two_point(hr_pt[0].x,hr_pt[0].y,hr_pt[1].x,hr_pt[1].y);
+  // cv::circle(img, cv::Point( (hr_pt[0].x + hr_pt[1].x)/2,(hr_pt[0].y + hr_pt[1].y)/2), hr_dist*0.98/2, r_bgr[0], -1, 8);
+
+  //右内
   x = (r_pt[0].x + r_pt[1].x + r_pt[2].x)/3;
   y = (r_pt[0].y + r_pt[1].y + r_pt[2].y)/3;
   pt[0] = cv::Point((x+r_pt[0].x)/2,(y+r_pt[0].y)/2); 
   pt[1] = cv::Point((x+r_pt[1].x)/2,(y+r_pt[1].y)/2);
   pt[2] = cv::Point((x+r_pt[2].x)/2,(y+r_pt[2].y)/2);
   cv::fillConvexPoly(img, pt, 3,r_bgr[1]);
+  cv::line(img, pt[0], pt[1], cv::Scalar(0,0,0), 2, 4);
+  cv::line(img, pt[1], pt[2], cv::Scalar(0,0,0), 2, 4);
+  cv::line(img, pt[2], pt[0], cv::Scalar(0,0,0), 2, 4);
+
+  
+  // cv::ellipse(img,cv::Point((r_pt[0].x + r_pt[1].x)/2,(r_pt[0].y + r_pt[1].y)/2), cv::Size(r_a/2,r_b/2),theta_r,0,360,r_bgr[1], -1, 8); 
 }
 
 void draw_eye_two_ellipse(cv::Mat& img,cv::Point pt_lo,cv::Size sz_lo,int theta_lo,cv::Point pt_li,cv::Size sz_li,int theta_li,cv::Scalar le_bgr[2],cv::Point pt_ro,cv::Size sz_ro,int theta_ro,cv::Point pt_ri,cv::Size sz_ri,int theta_ri,cv::Scalar re_bgr[2]){

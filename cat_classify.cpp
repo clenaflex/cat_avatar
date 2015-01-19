@@ -79,7 +79,7 @@ int cat_classify(cv::Mat& img,cv::Point eye_r,int eye_r_wh,cv::Point eye_l,int e
 	cv::Mat org_img = img.clone();
 	cv::Mat low_color_img = img.clone();
 	cv::Mat gray_img = img.clone();
-	rgb_gray(gray_img,130);
+	rgb_gray(gray_img,100);
 	k_means(low_color_img,2);
 	cv::Mat3b orgdotImg = org_img;
 	cout << org_img.rows << " " << org_img.cols << endl;
@@ -127,9 +127,9 @@ void get_eye_color(cv::Mat eye_img,cv::Point ellipse_pq,int a ,int b,int theta,c
 	int r;
 	cv::Mat dst_img = eye_img.clone();
 	if (a>b){
-		r = a/2;
+		r = a*0.85/2;
 	}else{
-		r = b/2;
+		r = b*0.85/2;
 	}
 	get_color(dst_img,cv::Point(ellipse_pq.x + r*cos(theta*180/3.14),ellipse_pq.y + r*sin(theta*180/3.14)),eye_color);
 }

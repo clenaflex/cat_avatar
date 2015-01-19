@@ -108,3 +108,8 @@ g++ -o old_canny_line old_canny_line.cpp -I/path/to/opencv/include -L/path/to/op
 
 
 g++ -o new_canny_line new_canny_line.cpp -I/path/to/opencv/include -L/path/to/opencv/lib -lopencv_core -lopencv_highgui  -lopencv_objdetect -lopencv_features2d -lopencv_imgproc
+
+
+./avatar_drawer ./images/tri.jpg 7 51 180 407 8 250 156 347 150 382 333 130 267 524 150
+
+./avatar_drawer ./images/test8.jpg 4 7 100 209 8 110 87 165 70 190 159 60 132 209 80

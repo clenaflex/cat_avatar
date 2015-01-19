@@ -60,7 +60,7 @@ void ellipse_wh_calc(int a, int b ,int theta,int width_height[2]){
   width_height[1] = (max_y - (3*center/2))*2;
 }
 
-void detect_eye_ellipse(cv::Mat& img,double eye[5]){
+int detect_eye_ellipse(cv::Mat& img,double eye[5]){
   /*
   eye[0]:p
   eye[1]:q
@@ -75,6 +75,7 @@ void detect_eye_ellipse(cv::Mat& img,double eye[5]){
   cv::Sobel(img_gray, sobelX, CV_32F, 1, 0);
   cv::Sobel(img_gray, sobelY, CV_32F, 0, 1);
   cv::cartToPolar(sobelX, sobelY, norm, dir);
+  int flag = 2;
   
   double sob_min, sob_max;
   cv::minMaxLoc(norm, &sob_min, &sob_max);
@@ -93,7 +94,7 @@ void detect_eye_ellipse(cv::Mat& img,double eye[5]){
   for(int i = 0; i < contours.size(); ++i) {
 
     size_t count = contours[i].size();
-    if(count < 100 || count > 1000) continue; // （小さすぎる|大きすぎる）輪郭を除外
+    if(count < 90 || count > 1000) continue; // （小さすぎる|大きすぎる）輪郭を除外
     cv::Mat org_img = img_in.clone();
     cv::Mat pointsf;
     cv::Mat(contours[i]).convertTo(pointsf, CV_32F);
@@ -112,6 +113,7 @@ void detect_eye_ellipse(cv::Mat& img,double eye[5]){
         eye[2] = box.size.width/2;
         eye[3] = box.size.height/2;
         eye[4] = box.angle;
+        flag++;
 
         //瞳孔描画サンプル
         // cv::ellipse(org_img,cv::Point(box.center.x,box.center.y), cv::Size(which_max(box.size.height,box.size.width)/5,which_min(box.size.height,box.size.width)*2/5), 0 ,0,360,cv::Scalar(0,0,255), -1, 4);
@@ -120,7 +122,7 @@ void detect_eye_ellipse(cv::Mat& img,double eye[5]){
     }
 
   }
-
+  return flag;
 }
 
 
