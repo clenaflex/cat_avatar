@@ -168,7 +168,7 @@ void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point e
 		l_linea[0] = ear_l.x+ear_l_wh*0.8;
 		l_linea[1] = ear_l.y+ear_l_wh*0.2;
 		l_linea[2] = ear_l.x+ear_l_wh*0.1;
-		l_linea[3] = ear_l.y+ear_l_wh;
+		l_linea[3] = ear_l.y+ear_l_wh*0.75;
 		l_lineb[0] = ear_l.x+ear_l_wh*0.8;
 		l_lineb[1] = ear_l.y+ear_l_wh*0.2;
 		l_lineb[2] = ear_l.x+ear_l_wh*0.75;
@@ -266,7 +266,7 @@ void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point e
     re_bgr[0] = r_eye_color[0];
     re_bgr[1] = cv::Scalar(0,0,0);
 
-    draw_eye_two_ellipse(avatar,cv::Point(eye_l.x+l_eye[0],eye_l.y+l_eye[1]),cv::Size(l_eye[2],l_eye[3]),l_eye[4],cv::Point(eye_l.x+l_eye[0],eye_l.y+l_eye[1]),cv::Size(which_min(l_eye[2],l_eye[3])*0.9,which_max(l_eye[2],l_eye[3])/4),90,le_bgr,cv::Point(eye_r.x+r_eye[0],eye_r.y+r_eye[1]),cv::Size(r_eye[2],r_eye[3]),r_eye[4],cv::Point(eye_r.x+r_eye[0],eye_r.y+r_eye[1]),cv::Size(which_min(r_eye[2],r_eye[3])*0.9,which_max(r_eye[2],r_eye[3])/4),90,re_bgr);
+    draw_eye_two_ellipse(avatar,cv::Point(eye_l.x+l_eye[0],eye_l.y+l_eye[1]),cv::Size(l_eye[2],l_eye[3]),l_eye[4],cv::Point(eye_l.x+l_eye[0],eye_l.y+l_eye[1]),cv::Size(which_min(l_eye[2],l_eye[3])*0.9,which_max(l_eye[2],l_eye[3])/2),90,le_bgr,cv::Point(eye_r.x+r_eye[0],eye_r.y+r_eye[1]),cv::Size(r_eye[2],r_eye[3]),r_eye[4],cv::Point(eye_r.x+r_eye[0],eye_r.y+r_eye[1]),cv::Size(which_min(r_eye[2],r_eye[3])*0.9,which_max(r_eye[2],r_eye[3])/2),90,re_bgr);
     
     cv::Scalar mouth_color[1];
     get_mouth_color(mouth_img,mouth_color);

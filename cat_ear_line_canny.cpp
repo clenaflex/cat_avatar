@@ -13,33 +13,33 @@
 using namespace std;
 
 int line_cross_point_y(double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4){
-  double la = (y2 - y1)/(x2 - x1);
+  double la = (y2 - y1)/( (x2 - x1) *10*0.1 );
   double lb = y2 - la * x2;
-  double lc = (y4 - y3)/(x4 - x3);
+  double lc = (y4 - y3)/( (x4 - x3 *10*0.1) );
   double ld = y4 - lc * x4;
-  double x = (ld - lb) / (la - lc);
+  double x = (ld - lb) / ( (la - lc)*10*0.1 );
   double y = la * x + lb;
   return y;
 }
 
 int line_cross_point_x(double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4){
-  double la = (y2 - y1)/(x2 - x1);
+  double la = (y2 - y1)/( (x2 - x1)*10*0.1 );
   double lb = y2 - la * x2;
-  double lc = (y4 - y3)/(x4 - x3);
+  double lc = (y4 - y3)/( (x4 - x3)*10*0.1 );
   double ld = y4 - lc * x4;
-  double x = (ld - lb) / (la - lc);
-  double y = la * x + lb;
+  double x = (ld - lb) / ( (la - lc)*10*0.1 );
+  // double y = la * x + lb;
   return x;
 }
 
 
 
 double calc_tan_two_line(double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4){
-  double la = (y2 - y1)/(x2 - x1);
+  double la = (y2 - y1)/((x2 - x1)*10*0.1 );
   // double lb = y2 - la * x2;
-  double lc = (y4 - y3)/(x4 - x3);
+  double lc = (y4 - y3)/( (x4 - x3)*10*0.1 );
   // double ld = y4 - lc * x4;
-  return fabs((lc -la)/(1+la*lc));
+  return fabs((lc -la)/( (1+la*lc)*10*0.1 ));
 }
 
 int detect_ear_line(cv::Mat& img,int linea[4],int lineb[4]){

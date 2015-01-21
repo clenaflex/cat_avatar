@@ -127,9 +127,9 @@ void get_eye_color(cv::Mat eye_img,cv::Point ellipse_pq,int a ,int b,int theta,c
 	int r;
 	cv::Mat dst_img = eye_img.clone();
 	if (a>b){
-		r = a*0.85/2;
+		r = a/2;
 	}else{
-		r = b*0.85/2;
+		r = b/2;
 	}
 	get_color(dst_img,cv::Point(ellipse_pq.x + r*cos(theta*180/3.14),ellipse_pq.y + r*sin(theta*180/3.14)),eye_color);
 }
