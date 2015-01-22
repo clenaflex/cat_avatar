@@ -32,7 +32,10 @@ int line_cross_point_x(double x1,double y1,double x2,double y2,double x3,double 
   return x;
 }
 
-
+double calc_tan_single(double x1,double y1,double x2,double y2){
+  double la = (y2 - y1)/( (x2 - x1)*10*0.1);
+  return la;
+}
 
 double calc_tan_two_line(double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4){
   double la = (y2 - y1)/((x2 - x1)*10*0.1 );
@@ -56,8 +59,8 @@ int detect_ear_line(cv::Mat& img,int linea[4],int lineb[4]){
   std::vector<cv::Vec4i> lines2;
   // 入力画像，出力，距離分解能，角度分解能，閾値，線分の最小長さ，
   // 2点が同一線分上にあると見なす場合に許容される最大距離
-  cv::HoughLinesP(img, lines, 1, CV_PI/180, 50, 40, 5);
-  cv::HoughLinesP(img, lines2, 1, CV_PI/180, 50, 40, 5);
+  cv::HoughLinesP(img, lines, 1, CV_PI/180, 50, 40, 10);
+  cv::HoughLinesP(img, lines2, 1, CV_PI/180, 50, 40, 10);
 
   std::vector<cv::Vec4i>::iterator ita = lines.begin();
   std::vector<cv::Vec4i>::iterator itb = lines2.begin();
@@ -78,8 +81,11 @@ int detect_ear_line(cv::Mat& img,int linea[4],int lineb[4]){
   // filename += ".jpg";
   // cv::imwrite(filename,org_img);
   // org_img = origin_img.clone();
+      double calc_tan_sa = calc_tan_single(la[0],la[1],la[2],la[3]);
+      double calc_tan_sb = calc_tan_single(lb[0],lb[1],lb[2],lb[3]);
 
-      // cout << tan_calc << endl;
+      cout << " tan_calc:" << tan_calc << endl;
+      if(calc_tan_sa > 0.5 && calc_tan_sb > 0.5   ){
       if(0.7 < tan_calc && tan_calc <2){
         if(tan_calc > tan_ans){
           if(line_cross_point_y(la[0],la[1],la[2],la[3],lb[0],lb[1],lb[2],lb[3]) < img_height*1/10 && line_cross_point_y(la[0],la[1],la[2],la[3],lb[0],lb[1],lb[2],lb[3]) >0 && 0 < line_cross_point_x(la[0],la[1],la[2],la[3],lb[0],lb[1],lb[2],lb[3]) && line_cross_point_x(la[0],la[1],la[2],la[3],lb[0],lb[1],lb[2],lb[3]) < image_width){
@@ -95,13 +101,6 @@ int detect_ear_line(cv::Mat& img,int linea[4],int lineb[4]){
           // cout << tan_calc << endl;
           cout << "line OK" << endl;
           sc_flag++;
-          }
-        }
-      }
-
-    }
-  }
-  cout << "line_detect_finished" << endl;
   cv::line(org_img, cv::Point(linea[0], linea[1]), cv::Point(linea[2], linea[3]), cv::Scalar(0,0,255), 2, CV_AA);
   cv::line(org_img, cv::Point(lineb[0], lineb[1]), cv::Point(lineb[2], lineb[3]), cv::Scalar(0,0,255), 2, CV_AA);
   cout << tan_ans << endl;
@@ -111,6 +110,14 @@ int detect_ear_line(cv::Mat& img,int linea[4],int lineb[4]){
   std::string filename = boost::lexical_cast<string>(tan_ans);
   filename += ".jpg";
   cv::imwrite(filename,org_img);
+          }
+        }
+      }
+}
+    }
+  }
+  cout << "line_detect_finished" << endl;
+
   return sc_flag;
 }
 

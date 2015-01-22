@@ -169,11 +169,20 @@ void draw_ear_two_triangle(cv::Mat& img,cv::Point l_pt[3],cv::Scalar l_bgr[2],cv
   double x;
   double y;
   // 左外
+
+  if (l_pt[2].y < 0){
+    l_pt[2].y += 2*abs(l_pt[2].y);
+  }
+  if (r_pt[2].y < 0){
+    r_pt[2].y += 2*abs(r_pt[2].y);
+  }
+
   cv::fillConvexPoly(img, l_pt, 3,l_bgr[0]);
   double l_0_a,l_0_b,l_1_a,l_1_b;
   double r_0_a,r_0_b,r_1_a,r_1_b;
   double l_theta_0,l_theta_1;
   double r_theta_0,r_theta_1;
+
   l_theta_0 = atan(calc_tan(l_pt[0].x,l_pt[0].y,l_pt[2].x,l_pt[2].y))*180/3.14;
   l_theta_1 = atan(calc_tan(l_pt[1].x,l_pt[1].y,l_pt[2].x,l_pt[2].y))*180/3.14;
   cout << "theta" << l_theta_0 << " " << l_theta_1 << endl;
@@ -182,16 +191,9 @@ void draw_ear_two_triangle(cv::Mat& img,cv::Point l_pt[3],cv::Scalar l_bgr[2],cv
   l_1_a = dist_two_point(l_pt[1].x,l_pt[1].y,l_pt[2].x ,l_pt[2].y)/2;
   l_1_b = l_0_a*2/10;
  
-if(l_theta_0>0){
-  cv::ellipse(img,cv::Point( (l_pt[0].x+l_pt[2].x)/2.0 ,(l_pt[0].y+l_pt[2].y)/2.0 ), cv::Size(l_0_a,l_0_b),180+l_theta_0,180,360,l_bgr[0], -1, 8);
-}else{
-  cv::ellipse(img,cv::Point( (l_pt[0].x+l_pt[2].x)/2.0 ,(l_pt[0].y+l_pt[2].y)/2.0 ), cv::Size(l_0_a,l_0_b),l_theta_0,180,360,l_bgr[0], -1, 8);
-}
-if(l_theta_1<0){
-  cv::ellipse(img,cv::Point( (l_pt[1].x+l_pt[2].x)/2.0 ,(l_pt[1].y+l_pt[2].y)/2.0  ), cv::Size(l_1_a,l_1_b),180+l_theta_1,180,360,l_bgr[0], -1, 8);
-}else{
-  cv::ellipse(img,cv::Point( (l_pt[1].x+l_pt[2].x)/2.0 ,(l_pt[1].y+l_pt[2].y)/2.0  ), cv::Size(l_1_a,l_1_b),l_theta_1,180,360,l_bgr[0], -1, 8);
-}
+  cv::ellipse(img,cv::Point( (l_pt[0].x+l_pt[2].x)/2.0 ,(l_pt[0].y+l_pt[2].y)/2.0 ), cv::Size(l_0_a,l_0_b),l_theta_0,0,360,l_bgr[0], -1, 8);
+
+  cv::ellipse(img,cv::Point( (l_pt[1].x+l_pt[2].x)/2.0 ,(l_pt[1].y+l_pt[2].y)/2.0  ), cv::Size(l_1_a,l_1_b),l_theta_1,0,360,l_bgr[0], -1, 8);
   
 
   cv::Point hl_pt[3];
@@ -225,16 +227,9 @@ if(l_theta_1<0){
   r_1_a = dist_two_point(r_pt[1].x,r_pt[1].y,r_pt[2].x ,r_pt[2].y)/2.0;
   r_1_b = r_0_a*2/10.0;
  
-if(r_theta_0<0){
-  cv::ellipse(img,cv::Point( (r_pt[0].x+r_pt[2].x)/2.0 ,(r_pt[0].y+r_pt[2].y)/2.0 ), cv::Size(r_0_a,r_0_b),180+r_theta_0,180,360,r_bgr[0], -1, 8);
-}else{
-  cv::ellipse(img,cv::Point( (r_pt[0].x+r_pt[2].x)/2.0 ,(r_pt[0].y+r_pt[2].y)/2.0 ), cv::Size(r_0_a,r_0_b),r_theta_0,180,360,r_bgr[0], -1, 8);
-}
-if(r_theta_1>0){
-  cv::ellipse(img,cv::Point( (r_pt[1].x+r_pt[2].x)/2.0 ,(r_pt[1].y+r_pt[2].y)/2.0  ), cv::Size(r_1_a,r_1_b),180+r_theta_1,180,360,r_bgr[0], -1, 8);
-}else{
-  cv::ellipse(img,cv::Point( (r_pt[1].x+r_pt[2].x)/2.0 ,(r_pt[1].y+r_pt[2].y)/2.0  ), cv::Size(r_1_a,r_1_b),r_theta_1,180,360,r_bgr[0], -1, 8);
-}
+
+  cv::ellipse(img,cv::Point( (r_pt[0].x+r_pt[2].x)/2.0 ,(r_pt[0].y+r_pt[2].y)/2.0 ), cv::Size(r_0_a,r_0_b),r_theta_0,0,360,r_bgr[0], -1, 8);
+  cv::ellipse(img,cv::Point( (r_pt[1].x+r_pt[2].x)/2.0 ,(r_pt[1].y+r_pt[2].y)/2.0  ), cv::Size(r_1_a,r_1_b),r_theta_1,0,360,r_bgr[0], -1, 8);
 
   //右内
   x = (r_pt[0].x + r_pt[1].x + r_pt[2].x)/3;

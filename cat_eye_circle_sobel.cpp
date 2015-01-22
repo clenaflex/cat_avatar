@@ -1,10 +1,14 @@
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
 #include <iostream>
+#include <vector>
 #include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
-// #include <boost/lexical_cast.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace std;
 
@@ -69,6 +73,7 @@ int detect_eye_ellipse(cv::Mat& img,double eye[5]){
   eye[4]:theta
   */
   cv::Mat img_in = img.clone();
+  cv::Mat org_img_in = img.clone();
   cv::Mat img_gray;
   cv::cvtColor(img_in, img_gray, CV_RGB2GRAY);
   cv::Mat sobelX, sobelY, norm, dir;
@@ -94,7 +99,7 @@ int detect_eye_ellipse(cv::Mat& img,double eye[5]){
   for(int i = 0; i < contours.size(); ++i) {
 
     size_t count = contours[i].size();
-    if(count < 90 || count > 1000) continue; // （小さすぎる|大きすぎる）輪郭を除外
+    if(count < 100 || count > 1000) continue; // （小さすぎる|大きすぎる）輪郭を除外
     cv::Mat org_img = img_in.clone();
     cv::Mat pointsf;
     cv::Mat(contours[i]).convertTo(pointsf, CV_32F);
@@ -117,11 +122,18 @@ int detect_eye_ellipse(cv::Mat& img,double eye[5]){
 
         //瞳孔描画サンプル
         // cv::ellipse(org_img,cv::Point(box.center.x,box.center.y), cv::Size(which_max(box.size.height,box.size.width)/5,which_min(box.size.height,box.size.width)*2/5), 0 ,0,360,cv::Scalar(0,0,255), -1, 4);
+        cv::ellipse(org_img_in, box, cv::Scalar(0,0,255), 2, CV_AA);
+        int num = count;
+        cout<< "Eye" << num << endl;
+        std::string filename = boost::lexical_cast<string>(num)+".png";
+        cv::imwrite(filename,org_img_in);
+        org_img_in = img_in.clone();
       }
 
     }
 
   }
+  cout<< "Eye detect finished" << endl;
   return flag;
 }
 

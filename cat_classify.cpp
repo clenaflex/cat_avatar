@@ -8,9 +8,114 @@
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace cv;
 using namespace std;
+
+int max_3(int a,int b,int c){
+	if(a>b){
+		if(a>c){
+			return 0;
+		}else{
+			return 2;
+		}
+
+	}else if(b>c){
+		if(b>a){
+			return 1;
+		}else{
+			return 0;
+		}
+	}else if (c>a){
+		if(c>b){
+			return 2;
+		}else{
+			return 1;
+		}
+	}else{
+		return 3;
+	} 
+}
+
+int min_3(int a,int b,int c){
+	if(a>b){
+		if(c>b){
+			return 1;
+		}else{
+			return 2;
+		}
+
+	}else if(b>c){
+		if(a>c){
+			return 2;
+		}else{
+			return 0;
+		}
+	}else if (c>a){
+		if(b>a){
+			return 0;
+		}else{
+			return 1;
+		}
+	}else{
+		return 3;
+	}
+}
+
+
+void hsv_to_rgb(int hsv[3],int rgb[3]){
+	int max = hsv[2];
+	int min = max-(max*(hsv[1]/255.0));
+	cout <<"MAx-MIN" << max << " " << min << endl;
+	cout << "HSV:" << hsv[0] << " " << hsv[1] << " " << hsv[2] <<endl;
+	if( -1 <hsv[0] && hsv[0] <61){
+		rgb[0] = max;
+		rgb[1] = (hsv[0]/60.0)*(max-min)+min;
+		rgb[2] = min;
+	}else if(60<hsv[0] && hsv[0]<121){
+		rgb[0] = ((120 - hsv[0])/60.0)*(max-min)+min;
+		rgb[1] = max;
+		rgb[2] = min;
+	}else if(120<hsv[0] && hsv[0]<181){
+		rgb[0] = min;
+		rgb[1] = max;
+		rgb[2] = ((hsv[0]-120)/60.0 )*(max-min)+min;
+	}else if(180<hsv[0] && hsv[0]<241){
+		rgb[0] = min;
+		rgb[1] = ((240-hsv[0])/60.0)*(max-min)+min;
+		rgb[2] = max;
+	}else if(240<hsv[0] && hsv[0]<301){
+		rgb[0] = ((hsv[0]-240)/60.0)*(max-min)+min;
+		rgb[1] = min;
+		rgb[2] = max;
+	}else if(300<hsv[0] && hsv[0]<361){
+		rgb[0] = max;
+		rgb[1] = min;
+		rgb[2] = ((360-hsv[0])/60.0)*(max-min)+min; 
+	}
+}
+
+void rgb_to_hsv(int rgb[3],int hsv[3]){
+	int max_s = max_3(rgb[0],rgb[1],rgb[2]);
+	int min_s = min_3(rgb[0],rgb[1],rgb[2]);
+	if (max_s == 0){
+		hsv[0] = 60 * (rgb[1]-rgb[2])/ ((rgb[max_s]-rgb[min_s])*0.1*10) ;
+	}else if (max_s == 1){
+		hsv[0] = 120 + 60 * (rgb[2]-rgb[0])/( (rgb[max_s]-rgb[min_s])*0.1*10) ;
+	}else if (max_s == 2){
+		hsv[0] = 240 + 60 * (rgb[0]-rgb[1])/((rgb[max_s]-rgb[min_s])*0.1*10);
+	}else{
+		hsv[0] = 0;
+	}
+	if(hsv[0] < 0){
+		hsv[0] +=360;
+	}
+	//S,V 's ranges are 0~255
+	hsv[1] = 255*(rgb[max_s]-rgb[min_s])/(rgb[max_s]*0.1*10);
+	hsv[2] = rgb[max_s];
+}
+
 
 void get_color(cv::Mat img,cv:: Point img_point,cv::Scalar color[1]){
 	cv::Mat dst_img = img.clone();
@@ -127,11 +232,32 @@ void get_eye_color(cv::Mat eye_img,cv::Point ellipse_pq,int a ,int b,int theta,c
 	int r;
 	cv::Mat dst_img = eye_img.clone();
 	if (a>b){
-		r = a/2;
+		r = a*0.75;
 	}else{
-		r = b/2;
+		r = b*0.75;
+		theta +=90;
 	}
+	cv::Scalar colors[4];
 	get_color(dst_img,cv::Point(ellipse_pq.x + r*cos(theta*180/3.14),ellipse_pq.y + r*sin(theta*180/3.14)),eye_color);
+
+	cv::circle(dst_img, cv::Point(ellipse_pq.x + r*cos(theta*180/3.14),ellipse_pq.y + r*sin(theta*180/3.14) ), 1, cv::Scalar(0,0,200), -1, 4);
+	std::string filename = "eye_";
+	filename += boost::lexical_cast<string>(a);
+	filename += ".png";
+	cv::imwrite(filename,dst_img);
+
+	int rgb[3],hsv[3];
+	rgb[0]=eye_color[0][2];
+	rgb[1]=eye_color[0][1];
+	rgb[2]=eye_color[0][0];
+	cout << rgb[0] << " " << rgb[1] << " " << rgb[2] << endl;
+	rgb_to_hsv(rgb,hsv);
+	hsv[2] +=40;
+	hsv_to_rgb(hsv,rgb);
+	cout << rgb[0] << " " << rgb[1] << " " << rgb[2] << endl;
+	eye_color[0][2]=rgb[0];
+	eye_color[0][1]=rgb[1];
+	eye_color[0][0]=rgb[2];
 }
 void get_ear_color(cv::Mat ear_img,cv::Scalar ear_color[1]){
 	cv::Mat dst_img = ear_img.clone();
