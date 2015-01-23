@@ -124,6 +124,15 @@ void get_color(cv::Mat img,cv:: Point img_point,cv::Scalar color[1]){
 	color[0] = cv::Scalar(p[0],p[1],p[2]);
 }
 
+void get_color_resize(cv::Mat img,cv::Scalar color[1]){
+	cv::Mat src_img = img.clone(); 
+	cv::Mat dst_img2(1,1, src_img.type());
+	// color[1];
+	cv::resize(src_img, dst_img2, dst_img2.size(), cv::INTER_CUBIC);
+	get_color(dst_img2,cv::Point(0,0),color);
+	cout << "get_color_resize:" << color[0][2] << " " <<color[0][1] << " " <<color[0][0] << endl;
+}
+
 
 void rgb_gray(cv::Mat& img,int threshold){
 	cv::Mat3b dotImg = img;
@@ -196,6 +205,10 @@ int cat_classify(cv::Mat& img,cv::Point eye_r,int eye_r_wh,cv::Point eye_l,int e
 	cv::Point point_3 = cv::Point((eye_r.x+eye_r_wh+eye_l.x+eye_l_wh)/2,(eye_r.y+eye_r_wh+eye_l.y+eye_l_wh)/2);
 	cv::Point point_4 = cv::Point((eye_r.x+eye_r_wh/2+mouth.x)/2,mouth.y+mouth_wh/2);
 	cv::Point point_5 = cv::Point((eye_l.x+eye_l_wh/2+mouth.x+mouth_wh)/2,mouth.y+mouth_wh/2);
+
+	cv::Mat area1(org_img, cv::Rect(eye_r.x,eye_r.y-eye_r_wh,eye_r_wh,eye_r_wh));
+	cv::Mat area2(org_img, cv::Rect(eye_l.x,eye_l.y-eye_l_wh,eye_l_wh,eye_l_wh));
+	cv::Mat area3(org_img, cv::Rect(eye_r.x+eye_r_wh,eye_r.y,eye_r_wh,eye_r_wh));
 	
 	cv::Vec3b orgp1 = orgdotImg(point_1);	
 	cv::Vec3b orgp2 = orgdotImg(point_2);
@@ -222,25 +235,36 @@ int cat_classify(cv::Mat& img,cv::Point eye_r,int eye_r_wh,cv::Point eye_l,int e
 	}else{
 		type = 30;
 	}
-	face_color[0] = cv::Scalar(orgp1[0],orgp1[1],orgp1[2]);
-	face_color[1] = cv::Scalar(orgp2[0],orgp2[1],orgp2[2]);
-	face_color[2] = cv::Scalar(orgp3[0],orgp3[1],orgp3[2]);
+	cv::Scalar color[1];
+	get_color_resize(area1,color);
+	face_color[0] = color[0];
+	get_color_resize(area2,color);
+	face_color[1] = color[0];
+	get_color_resize(area3,color);
+	face_color[2] = color[0];
+
+	// face_color[0] = cv::Scalar(orgp1[0],orgp1[1],orgp1[2]);
+	// face_color[1] = cv::Scalar(orgp2[0],orgp2[1],orgp2[2]);
+	// face_color[2] = cv::Scalar(orgp3[0],orgp3[1],orgp3[2]);
 	return type;
 }
 
 void get_eye_color(cv::Mat eye_img,cv::Point ellipse_pq,int a ,int b,int theta,cv::Scalar eye_color[1]){
 	int r;
 	cv::Mat dst_img = eye_img.clone();
+	cout<< "el_theta" << theta << "a:"<< a << "b" <<  b << endl;
 	if (a>b){
-		r = a*0.75;
+		r = a*0.77;
 	}else{
-		r = b*0.75;
-		theta +=90;
+		r = b*0.7;
+		theta = -1*(theta-90);
 	}
-	cv::Scalar colors[4];
 	get_color(dst_img,cv::Point(ellipse_pq.x + r*cos(theta*180/3.14),ellipse_pq.y + r*sin(theta*180/3.14)),eye_color);
 
 	cv::circle(dst_img, cv::Point(ellipse_pq.x + r*cos(theta*180/3.14),ellipse_pq.y + r*sin(theta*180/3.14) ), 1, cv::Scalar(0,0,200), -1, 4);
+	theta = 0;
+	cv::circle(dst_img, cv::Point(ellipse_pq.x + r*cos(theta*180/3.14),ellipse_pq.y + r*sin(theta*180/3.14) ), 1, cv::Scalar(255,0,0), -1, 4);
+	cv::circle(dst_img, cv::Point(ellipse_pq.x ,ellipse_pq.y), 1, cv::Scalar(0,255,0), -1, 4);
 	std::string filename = "eye_";
 	filename += boost::lexical_cast<string>(a);
 	filename += ".png";

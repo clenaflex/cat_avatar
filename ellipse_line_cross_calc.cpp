@@ -155,7 +155,7 @@ void draw_face_ellipse(cv::Mat& img,double p,double q,double a,double b,cv::Scal
    // cv::fillConvexPoly(img, pt, 3,bgr[2]);
    if (type == 10){
     cv::ellipse(img,cv::Point(p,q), cv::Size(a,b),0,180,360,bgr[0], -1, 4);
-    cv::ellipse(img,cv::Point(p,q), cv::Size(a,b*0.9),0,0,180,bgr[0], -1, 4);
+    cv::ellipse(img,cv::Point(p,q), cv::Size(a,b*1.1),0,0,180,bgr[0], -1, 4);
    }else if(type == 20 || type == 30 ){
        cv::ellipse(img,cv::Point(p,q), cv::Size(a,b),0,150,270,bgr[0], -1, 4);
        cv::ellipse(img,cv::Point(p,q), cv::Size(a,b),0,-90,30,bgr[1], -1, 4);

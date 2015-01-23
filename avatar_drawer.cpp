@@ -53,7 +53,7 @@ void draw_outline(cv::Mat& avatar,cv::Scalar background_color){
 	}	
 }
 
-void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point ear_l,int ear_l_wh,cv::Point eye_r,int eye_r_wh,cv::Point eye_l,int eye_l_wh,cv::Point mouth,int mouth_wh){
+void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point ear_l,int ear_l_wh,cv::Point eye_r,int eye_r_wh,cv::Point eye_l,int eye_l_wh,cv::Point mouth,int mouth_wh,std::string savename){
 	// cols:width
 	// rows:height
 	// rは向かって左、猫からしたら右
@@ -266,6 +266,17 @@ void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point e
     re_bgr[0] = r_eye_color[0];
     re_bgr[1] = cv::Scalar(0,0,0);
 
+	if (sc_flag_r > 2 && sc_flag_l > 2 ){
+	}else if(sc_flag_r > 2 && sc_flag_l < 3){
+		le_bgr[0] = re_bgr[0];
+	}else if(sc_flag_r < 3 && sc_flag_l > 2){
+		re_bgr[0] = le_bgr[0];
+	}else{
+		cout << "Both eye detect failed" << endl;
+	}
+
+
+
     draw_eye_two_ellipse(avatar,cv::Point(eye_l.x+l_eye[0],eye_l.y+l_eye[1]),cv::Size(l_eye[2],l_eye[3]),l_eye[4],cv::Point(eye_l.x+l_eye[0],eye_l.y+l_eye[1]),cv::Size(which_min(l_eye[2],l_eye[3])*0.9,which_max(l_eye[2],l_eye[3])/2),90,le_bgr,cv::Point(eye_r.x+r_eye[0],eye_r.y+r_eye[1]),cv::Size(r_eye[2],r_eye[3]),r_eye[4],cv::Point(eye_r.x+r_eye[0],eye_r.y+r_eye[1]),cv::Size(which_min(r_eye[2],r_eye[3])*0.9,which_max(r_eye[2],r_eye[3])/2),90,re_bgr);
     
     cv::Scalar mouth_color[1];
@@ -273,7 +284,8 @@ void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point e
     cv::Scalar c_m = mouth_color[0];
     draw_mouth(avatar,mouth,mouth_wh,mouth_wh,c_m);
     draw_outline(avatar,background_color);
-    cv::imwrite("avatar.png",avatar);
+    savename +="_avatar.png";
+    cv::imwrite(savename,avatar);
     cv::namedWindow("avatar", CV_WINDOW_AUTOSIZE|CV_WINDOW_FREERATIO);
     cv::imshow("avatar", avatar);
     cv::waitKey(0);
@@ -282,8 +294,13 @@ void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point e
 int main(int argc, char** argv)
 {
 	cv::Mat src_img = cv::imread(argv[1], 1);
+
+
 	if(!src_img.data) return -1;
+	std::string filename = argv[1];
+	int place = filename.find_last_of("/");
+	std::string sub = filename.substr(place+1, filename.size()-place-5);  
 	cv::Mat cat_face_img = src_img.clone();
-	avatar_drawer(cat_face_img,cv::Point(atoi(argv[2]),atoi(argv[3])),atoi(argv[4]),cv::Point(atoi(argv[5]),atoi(argv[6])),atoi(argv[7]),cv::Point(atoi(argv[8]),atoi(argv[9])),atoi(argv[10]),cv::Point(atoi(argv[11]),atoi(argv[12])),atoi(argv[13]),cv::Point(atoi(argv[14]),atoi(argv[15])),atoi(argv[16]));
+	avatar_drawer(cat_face_img,cv::Point(atoi(argv[2]),atoi(argv[3])),atoi(argv[4]),cv::Point(atoi(argv[5]),atoi(argv[6])),atoi(argv[7]),cv::Point(atoi(argv[8]),atoi(argv[9])),atoi(argv[10]),cv::Point(atoi(argv[11]),atoi(argv[12])),atoi(argv[13]),cv::Point(atoi(argv[14]),atoi(argv[15])),atoi(argv[16]),sub);
 	return 0;
 }

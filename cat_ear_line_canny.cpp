@@ -84,7 +84,7 @@ int detect_ear_line(cv::Mat& img,int linea[4],int lineb[4]){
       double calc_tan_sa = calc_tan_single(la[0],la[1],la[2],la[3]);
       double calc_tan_sb = calc_tan_single(lb[0],lb[1],lb[2],lb[3]);
 
-      cout << " tan_calc:" << tan_calc << endl;
+      // cout << " tan_calc:" << tan_calc << endl;
       if(calc_tan_sa > 0.5 && calc_tan_sb > 0.5   ){
       if(0.7 < tan_calc && tan_calc <2){
         if(tan_calc > tan_ans){

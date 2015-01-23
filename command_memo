@@ -113,3 +113,5 @@ g++ -o new_canny_line new_canny_line.cpp -I/path/to/opencv/include -L/path/to/op
 ./avatar_drawer ./images/tri.jpg 7 51 180 407 8 250 156 347 150 382 333 130 267 524 150
 
 ./avatar_drawer ./images/test8.jpg 4 7 100 209 8 110 87 165 70 190 159 60 132 209 80
+
+./avatar_drawer ./cats_av_ex/010.jpg 2 0 120 192 4 106 69 157 70 182 159 65 119 222 80

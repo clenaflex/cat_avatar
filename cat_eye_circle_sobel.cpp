@@ -99,7 +99,7 @@ int detect_eye_ellipse(cv::Mat& img,double eye[5]){
   for(int i = 0; i < contours.size(); ++i) {
 
     size_t count = contours[i].size();
-    if(count < 100 || count > 1000) continue; // （小さすぎる|大きすぎる）輪郭を除外
+    if(count < 108 || count > 1000) continue; // （小さすぎる|大きすぎる）輪郭を除外
     cv::Mat org_img = img_in.clone();
     cv::Mat pointsf;
     cv::Mat(contours[i]).convertTo(pointsf, CV_32F);
@@ -119,7 +119,7 @@ int detect_eye_ellipse(cv::Mat& img,double eye[5]){
         eye[3] = box.size.height/2;
         eye[4] = box.angle;
         flag++;
-
+        
         //瞳孔描画サンプル
         // cv::ellipse(org_img,cv::Point(box.center.x,box.center.y), cv::Size(which_max(box.size.height,box.size.width)/5,which_min(box.size.height,box.size.width)*2/5), 0 ,0,360,cv::Scalar(0,0,255), -1, 4);
         cv::ellipse(org_img_in, box, cv::Scalar(0,0,255), 2, CV_AA);
