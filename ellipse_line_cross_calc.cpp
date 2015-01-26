@@ -219,7 +219,7 @@ void draw_ear_two_triangle(cv::Mat& img,cv::Point l_pt[3],cv::Scalar l_bgr[2],cv
   pt[1] = cv::Point((x+l_pt[1].x)/2,(y+l_pt[1].y)/2);
   pt[2] = cv::Point((x+l_pt[2].x)/2,(y+l_pt[2].y)/2);
   cv::fillConvexPoly(img, pt, 3,l_bgr[1]);
-  cv::line(img, pt[0], pt[1],cv::Scalar(0,0,0), 2, 4);
+  // cv::line(img, pt[0], pt[1],cv::Scalar(0,0,0), 2, 4);
   cv::line(img, pt[1], pt[2],cv::Scalar(0,0,0), 2, 4);
   cv::line(img, pt[2], pt[0],cv::Scalar(0,0,0), 2, 4);
 
@@ -249,7 +249,7 @@ void draw_ear_two_triangle(cv::Mat& img,cv::Point l_pt[3],cv::Scalar l_bgr[2],cv
   pt[1] = cv::Point((x+r_pt[1].x)/2,(y+r_pt[1].y)/2);
   pt[2] = cv::Point((x+r_pt[2].x)/2,(y+r_pt[2].y)/2);
   cv::fillConvexPoly(img, pt, 3,r_bgr[1]);
-  cv::line(img, pt[0], pt[1], cv::Scalar(0,0,0), 2, 4);
+  // cv::line(img, pt[0], pt[1], cv::Scalar(0,0,0), 2, 4);
   cv::line(img, pt[1], pt[2], cv::Scalar(0,0,0), 2, 4);
   cv::line(img, pt[2], pt[0], cv::Scalar(0,0,0), 2, 4);
 

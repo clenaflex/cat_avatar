@@ -61,7 +61,7 @@ void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point e
 	cv::Scalar background_color = cv::Scalar(194,194,194);
 	cv::Mat avatar(dst_cat_face_img.rows,dst_cat_face_img.cols,CV_8UC3,background_color);
 	int p, q, a, b;
-	a = dst_cat_face_img.cols*0.85/2;
+	a = dst_cat_face_img.cols*0.8/2;
 	p = dst_cat_face_img.cols/2;
 	if ( (ear_r.y+ear_r_wh)<(ear_l.y+ear_l_wh) ){
 		b = (dst_cat_face_img.rows - (ear_r.y+ear_r_wh))*1.1/2;
@@ -216,7 +216,10 @@ void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point e
      }
 
     draw_ear_two_triangle(avatar,l_pt,l_bgr,r_pt,r_bgr);
-    draw_face_ellipse(avatar,p,q,a,b,face_color,type);
+    int m_y_param = 0;
+    m_y_param = (b/8);
+
+    draw_face_ellipse(avatar,p,q-m_y_param,a,b,face_color,type);
 
 	// double r_eye[5],l_eye[5];
 	double r_eye[10],l_eye[10];
@@ -314,12 +317,12 @@ void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point e
 
 
 
-    draw_eye_two_ellipse(avatar,cv::Point(eye_l.x+l_eye[0],eye_l.y+l_eye[1]),cv::Size(l_eye[2],l_eye[3]),l_eye[4],cv::Point(eye_l.x+l_eye[5],eye_l.y+l_eye[6]),cv::Size(l_eye[7],l_eye[8]),l_eye[9],le_bgr,cv::Point(eye_r.x+r_eye[0],eye_r.y+r_eye[1]),cv::Size(r_eye[2],r_eye[3]),r_eye[4],cv::Point(eye_r.x+r_eye[5],eye_r.y+r_eye[6]),cv::Size(r_eye[7],r_eye[8]),r_eye[9],re_bgr);
+    draw_eye_two_ellipse(avatar,cv::Point(eye_l.x+l_eye[0],eye_l.y+l_eye[1]-m_y_param),cv::Size(l_eye[2],l_eye[3]),l_eye[4],cv::Point(eye_l.x+l_eye[5],eye_l.y+l_eye[6]-m_y_param),cv::Size(l_eye[7],l_eye[8]),l_eye[9],le_bgr,cv::Point(eye_r.x+r_eye[0],eye_r.y+r_eye[1]-m_y_param),cv::Size(r_eye[2],r_eye[3]),r_eye[4],cv::Point(eye_r.x+r_eye[5],eye_r.y+r_eye[6]-m_y_param),cv::Size(r_eye[7],r_eye[8]),r_eye[9],re_bgr);
     
     cv::Scalar mouth_color[1];
     get_mouth_color(mouth_img,mouth_color);
     cv::Scalar c_m = mouth_color[0];
-    draw_mouth(avatar,mouth,mouth_wh,mouth_wh,c_m);
+    draw_mouth(avatar,cv::Point(mouth.x,mouth.y-m_y_param),mouth_wh,mouth_wh,c_m);
     draw_outline(avatar,background_color);
     savename +="_avatar.png";
     cv::imwrite(savename,avatar);
