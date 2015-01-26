@@ -176,6 +176,7 @@ cout << "count_2: " << count_2 << endl;
         std::string filename = boost::lexical_cast<string>(num)+".png";
         cv::imwrite(filename,org_img_in);
         org_img_in = img_in.clone();
+        flag = 99;
       }
     }
     }
@@ -187,7 +188,6 @@ cout << "count_2: " << count_2 << endl;
     eye[8] = which_max(eye[2],eye[3])*0.2;
     eye[9] = 90;
     cout<< "Can't detect pupil" << endl;
-    flag = 99;
   }
 
   cout<< "Eye detect finished" << endl;

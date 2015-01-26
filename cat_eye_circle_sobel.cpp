@@ -64,7 +64,7 @@ void ellipse_wh_calc(int a, int b ,int theta,int width_height[2]){
   width_height[1] = (max_y - (3*center/2))*2;
 }
 
-int detect_eye_ellipse(cv::Mat& img,double eye[5]){
+int detect_eye_ellipse(cv::Mat& img,double eye[10]){
   /*
   eye[0]:p
   eye[1]:q
@@ -81,6 +81,7 @@ int detect_eye_ellipse(cv::Mat& img,double eye[5]){
   cv::Sobel(img_gray, sobelY, CV_32F, 0, 1);
   cv::cartToPolar(sobelX, sobelY, norm, dir);
   int flag = 2;
+  int flag_2 = 2;
   
   double sob_min, sob_max;
   cv::minMaxLoc(norm, &sob_min, &sob_max);
@@ -89,23 +90,25 @@ int detect_eye_ellipse(cv::Mat& img,double eye[5]){
   norm.convertTo(img_sobel, CV_8U, -255.0 / sob_max, 255);
   cv::Mat gray_img, bin_img;
   std::vector<std::vector<cv::Point> > contours;
+  std::vector<std::vector<cv::Point> > contours_2;
   // 画像の二値化
   cv::threshold(img_sobel, bin_img, 0, 255, cv::THRESH_BINARY|cv::THRESH_OTSU);
 
   cv::findContours(bin_img, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+  cv::findContours(bin_img, contours_2, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
   int ellipse_width_height[2];
   int img_width = img_in.size().width;
   int img_height = img_in.size().height;
+  int decide_count=0;
   for(int i = 0; i < contours.size(); ++i) {
 
     size_t count = contours[i].size();
-    if(count < 108 || count > 1000) continue; // （小さすぎる|大きすぎる）輪郭を除外
+    if(count < 100 || count > 1000) continue; // （小さすぎる|大きすぎる）輪郭を除外
     cv::Mat org_img = img_in.clone();
     cv::Mat pointsf;
     cv::Mat(contours[i]).convertTo(pointsf, CV_32F);
     // 楕円フィッティング
     cv::RotatedRect box = cv::fitEllipse(pointsf);
-    
     if (box.center.y > 0 && box.center.x >0){
     ellipse_wh_calc(box.size.width/2,box.size.height/2,box.angle,ellipse_width_height);
       if(box.center.x- (ellipse_width_height[0]/2) > 0 && box.center.y-(ellipse_width_height[1]/2) > 0 && box.center.x+ (ellipse_width_height[0]/2)< img_width && box.center.y+(ellipse_width_height[1]/2) < img_height ){
@@ -119,30 +122,75 @@ int detect_eye_ellipse(cv::Mat& img,double eye[5]){
         eye[3] = box.size.height/2;
         eye[4] = box.angle;
         flag++;
-        
+        decide_count = count;
         //瞳孔描画サンプル
         // cv::ellipse(org_img,cv::Point(box.center.x,box.center.y), cv::Size(which_max(box.size.height,box.size.width)/5,which_min(box.size.height,box.size.width)*2/5), 0 ,0,360,cv::Scalar(0,0,255), -1, 4);
-        cv::ellipse(org_img_in, box, cv::Scalar(0,0,255), 2, CV_AA);
-        int num = count;
-        cout<< "Eye" << num << endl;
-        std::string filename = boost::lexical_cast<string>(num)+".png";
-        cv::imwrite(filename,org_img_in);
-        org_img_in = img_in.clone();
+        // cv::ellipse(org_img_in, box, cv::Scalar(0,0,255), 2, CV_AA);
+        // int num = count;
+        // cout<< "Eye" << num << endl;
+        // std::string filename = boost::lexical_cast<string>(num)+".png";
+        // cv::imwrite(filename,org_img_in);
+        // org_img_in = img_in.clone();
       }
 
     }
 
   }
+  int allow =  which_min(eye[2],eye[3])/4;
+  for(int i = 0; i < contours_2.size(); ++i) {
+
+    size_t count_2 = contours_2[i].size();
+    if(count_2 > decide_count  ||  count_2 < 10) continue; //  輪郭より大きいのを除外
+    // cv::Mat org_img = img_in.clone();
+    cv::Mat pointsf_2;
+    cv::Mat(contours_2[i]).convertTo(pointsf_2, CV_32F);
+    // 楕円フィッティング
+    cv::RotatedRect box_2 = cv::fitEllipse(pointsf_2);
+
+   if(  which_min(eye[2],eye[3]) > which_max(box_2.size.width/2,box_2.size.height/2) && flag>2 ){
+    if (box_2.center.y>(eye[1]-allow) && box_2.center.y<(eye[1]+allow)){
+      if(box_2.center.x>(eye[0]-allow) && box_2.center.x<(eye[0]+allow)){
+        eye[5] = box_2.center.x;
+        eye[6] = box_2.center.y;
+        eye[7] = box_2.size.width/2;
+        eye[8] = box_2.size.height/2;
+        eye[9] = box_2.angle;
+        flag_2++;
+
+        cv::ellipse(org_img_in, box_2, cv::Scalar(0,0,255), 2, CV_AA);
+        int num = count_2;
+        cout<< "Pupil" << num << endl;
+        std::string filename = "pupil_" + boost::lexical_cast<string>(num)+".png";
+        cv::imwrite(filename,org_img_in);
+        org_img_in = img_in.clone();
+        flag = 99;
+        cout<< "OK!! detect pupil!!" << endl;
+      }
+    }
+    }
+  }
+  if(flag>2 && flag_2<3){
+    eye[5] = eye[0];
+    eye[6] = eye[1];
+    eye[7] = which_min(eye[2],eye[3])*0.8;
+    eye[8] = which_max(eye[2],eye[3])*0.2;
+    eye[9] = 90;
+    cout<< "Can't detect pupil" << endl;
+  }
+
   cout<< "Eye detect finished" << endl;
   return flag;
 }
 
 
-// int main(int argc, char** argv) {
+// int main(int argc, char **argv) {
+//      cout << "error" << endl;
 //   cv::Mat img_in = cv::imread(argv[1], 1);
-//   double eye[5];
+//   double eye[10];
+//    cout << "error" << endl;
 //   detect_eye_ellipse(img_in,eye);
 //   cv::ellipse(img_in,cv::Point(eye[0],eye[1]), cv::Size(eye[2],eye[3]), eye[4] ,0,360,cv::Scalar(0,0,255), 3, 4);
+//   cv::ellipse(img_in,cv::Point(eye[5],eye[6]), cv::Size(eye[7],eye[8]), eye[9] ,0,360,cv::Scalar(0,255,0), 3, 4);
 //   cv::namedWindow("Eye", CV_WINDOW_AUTOSIZE|CV_WINDOW_FREERATIO);
 //   // std::string filename = boost::lexical_cast<string>(変数);
 //   std::string filename = "result.jpg";

@@ -218,19 +218,38 @@ void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point e
     draw_ear_two_triangle(avatar,l_pt,l_bgr,r_pt,r_bgr);
     draw_face_ellipse(avatar,p,q,a,b,face_color,type);
 
-	double r_eye[5],l_eye[5];
+	// double r_eye[5],l_eye[5];
+	double r_eye[10],l_eye[10];
 	sc_flag_r = detect_eye_ellipse(eye_r_img,r_eye);
 	sc_flag_l = detect_eye_ellipse(eye_l_img,l_eye);
 
 	if (sc_flag_r > 2 && sc_flag_l > 2 ){
 		cout << "Both eye detect success" << endl;
+		if(sc_flag_r ==  99 && sc_flag_l < 99 ){
+		l_eye[5] = l_eye[0];
+		l_eye[6] = l_eye[1];
+		l_eye[7] = r_eye[7];
+		l_eye[8] = r_eye[8];
+		l_eye[9] = 180 - r_eye[9];	
+		}else if(sc_flag_l ==  99 && sc_flag_r < 99){
+		r_eye[5] = r_eye[0];
+		r_eye[6] = r_eye[1];
+		r_eye[7] = l_eye[7];
+		r_eye[8] = l_eye[8];
+		r_eye[9] = 180 - l_eye[9];
+		}
 	}else if(sc_flag_r > 2 && sc_flag_l < 3){
 		cout << "Only r eye detect success" << endl;
 		l_eye[0] = reverse_point_x(eye_r.x + r_eye[0],img_width)-eye_l.x;
-		l_eye[1] = r_eye[1] + + eye_r.y - eye_l.y;
+		l_eye[1] = r_eye[1] + eye_r.y - eye_l.y;
 		l_eye[2] = r_eye[2];
 		l_eye[3] = r_eye[3];
 		l_eye[4] = 180 - r_eye[4];
+		l_eye[5] = reverse_point_x(eye_r.x + r_eye[5],img_width)-eye_l.x;
+		l_eye[6] = r_eye[6] + eye_r.y - eye_l.y;
+		l_eye[7] = r_eye[7];
+		l_eye[8] = r_eye[8];
+		l_eye[9] = 180 - r_eye[9];	
 	}else if(sc_flag_r < 3 && sc_flag_l > 2){
 		cout << "Only l eye detect success" << endl;
 		r_eye[0] = reverse_point_x(eye_l.x + l_eye[0],img_width)-eye_r.x;
@@ -238,6 +257,11 @@ void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point e
 		r_eye[2] = l_eye[2];
 		r_eye[3] = l_eye[3];
 		r_eye[4] = 180 - l_eye[4];
+		r_eye[5] = reverse_point_x(eye_l.x + l_eye[5],img_width)-eye_r.x;
+		r_eye[6] = l_eye[6] + eye_l.y - eye_r.y;
+		r_eye[7] = l_eye[7];
+		r_eye[8] = l_eye[8];
+		r_eye[9] = 180 - l_eye[9];
 	}else{
 		cout << "Both eye detect failed" << endl;
 		l_eye[0] = eye_l_wh/2;
@@ -246,11 +270,24 @@ void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point e
 		l_eye[3] = eye_l_wh*0.3/2;
 		l_eye[4] = -10;
 
+		l_eye[5] = l_eye[0];
+		l_eye[6] = l_eye[1];
+		l_eye[7] = which_min(l_eye[2],l_eye[3])*0.9;
+		l_eye[8] = which_max(l_eye[2],l_eye[3])/2;
+		l_eye[9] = 90;
+
+
 		r_eye[0] = reverse_point_x(eye_l.x + l_eye[0],img_width)-eye_r.x;
 		r_eye[1] = l_eye[1] + eye_l.y - eye_r.y;
 		r_eye[2] = eye_l_wh*0.8/2;
 		r_eye[3] = eye_l_wh*0.3/2;
 		r_eye[4] = 10;
+
+		r_eye[5] = r_eye[0];
+		r_eye[6] = r_eye[1];
+		r_eye[7] = l_eye[7];
+		r_eye[8] = l_eye[8];
+		r_eye[9] = 90;
 	}
 
 	cv::Scalar l_eye_color[1];
@@ -277,7 +314,7 @@ void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point e
 
 
 
-    draw_eye_two_ellipse(avatar,cv::Point(eye_l.x+l_eye[0],eye_l.y+l_eye[1]),cv::Size(l_eye[2],l_eye[3]),l_eye[4],cv::Point(eye_l.x+l_eye[0],eye_l.y+l_eye[1]),cv::Size(which_min(l_eye[2],l_eye[3])*0.9,which_max(l_eye[2],l_eye[3])/2),90,le_bgr,cv::Point(eye_r.x+r_eye[0],eye_r.y+r_eye[1]),cv::Size(r_eye[2],r_eye[3]),r_eye[4],cv::Point(eye_r.x+r_eye[0],eye_r.y+r_eye[1]),cv::Size(which_min(r_eye[2],r_eye[3])*0.9,which_max(r_eye[2],r_eye[3])/2),90,re_bgr);
+    draw_eye_two_ellipse(avatar,cv::Point(eye_l.x+l_eye[0],eye_l.y+l_eye[1]),cv::Size(l_eye[2],l_eye[3]),l_eye[4],cv::Point(eye_l.x+l_eye[5],eye_l.y+l_eye[6]),cv::Size(l_eye[7],l_eye[8]),l_eye[9],le_bgr,cv::Point(eye_r.x+r_eye[0],eye_r.y+r_eye[1]),cv::Size(r_eye[2],r_eye[3]),r_eye[4],cv::Point(eye_r.x+r_eye[5],eye_r.y+r_eye[6]),cv::Size(r_eye[7],r_eye[8]),r_eye[9],re_bgr);
     
     cv::Scalar mouth_color[1];
     get_mouth_color(mouth_img,mouth_color);

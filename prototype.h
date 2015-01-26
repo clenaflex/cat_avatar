@@ -1,7 +1,7 @@
 extern double which_min(double a,double b);
 extern double which_max(double a,double b);
 extern void ellipse_wh_calc(int a, int b ,int theta,int width_height[2]);
-extern int detect_eye_ellipse(cv::Mat& img,double eye[5]);
+extern int detect_eye_ellipse(cv::Mat& img,double eye[10]);
 extern void ellipse_line_cross_calc(double p,double q,double a,double b,double x1,double y1, double x2,double y2,double ans[2]);
 extern void line_cross_point(double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4,double ans[2]);
 extern void ellipse_ear_calc(double p,double q,double a,double b,double lx1,double ly1,double lx2,double ly2,double lx3,double ly3,double lx4,double ly4,double rx1,double ry1,double rx2,double ry2,double rx3,double ry3,double rx4,double ry4,double ans[12]);
