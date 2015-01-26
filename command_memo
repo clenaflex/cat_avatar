@@ -118,3 +118,6 @@ g++ -o new_canny_line new_canny_line.cpp -I/path/to/opencv/include -L/path/to/op
 
 
 g++ -o eye_circle_test eye_circle_test.cpp -I/path/to/opencv/include -L/path/to/opencv/lib -lopencv_core -lopencv_highgui  -lopencv_objdetect -lopencv_features2d -lopencv_imgproc
+
+
+g++ -o shima_detect shima_detect.cpp -I/path/to/opencv/include -L/path/to/opencv/lib -lopencv_core -lopencv_highgui  -lopencv_objdetect -lopencv_features2d -lopencv_imgproc

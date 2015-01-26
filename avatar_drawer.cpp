@@ -61,7 +61,7 @@ void avatar_drawer(cv::Mat cat_face_img,cv::Point ear_r,int ear_r_wh,cv::Point e
 	cv::Scalar background_color = cv::Scalar(194,194,194);
 	cv::Mat avatar(dst_cat_face_img.rows,dst_cat_face_img.cols,CV_8UC3,background_color);
 	int p, q, a, b;
-	a = dst_cat_face_img.cols*0.8/2;
+	a = dst_cat_face_img.cols*0.82/2;
 	p = dst_cat_face_img.cols/2;
 	if ( (ear_r.y+ear_r_wh)<(ear_l.y+ear_l_wh) ){
 		b = (dst_cat_face_img.rows - (ear_r.y+ear_r_wh))*1.1/2;

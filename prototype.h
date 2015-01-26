@@ -19,3 +19,4 @@ extern void get_eye_color(cv::Mat eye_img,cv::Point ellipse_pq,int a ,int b,int 
 extern void get_ear_color(cv::Mat ear_img,cv::Scalar ear_color[1]);
 extern void get_mouth_color(cv::Mat mouth_img,cv::Scalar mouth_color[1]);
 extern int line_cross_point_y(double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4);
+extern shima_detect(cv::Mat img);

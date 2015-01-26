@@ -276,7 +276,7 @@ void get_eye_color(cv::Mat eye_img,cv::Point ellipse_pq,int a ,int b,int theta,c
 	rgb[2]=eye_color[0][0];
 	cout << rgb[0] << " " << rgb[1] << " " << rgb[2] << endl;
 	rgb_to_hsv(rgb,hsv);
-	hsv[2] +=40;
+	hsv[2] +=50;
 	hsv_to_rgb(hsv,rgb);
 	cout << rgb[0] << " " << rgb[1] << " " << rgb[2] << endl;
 	eye_color[0][2]=rgb[0];
