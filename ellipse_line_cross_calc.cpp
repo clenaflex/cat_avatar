@@ -21,6 +21,17 @@ int which_big_num(int a,int b){
   }
 }
 
+int which_small_num(int a,int b){
+  if(a<b){
+    return 0;
+  }else if(b<a){
+    return 1;
+  }else{
+    return 0;
+  }
+}
+
+
 void perpendicular_calc(int cx,int cy,int x1,int y1,int x2,int y2,int fp[2]){
   double a = (y2 - y1)/( (x2 - x1)*10*0.1 );
   double b = -1.0;
@@ -247,19 +258,41 @@ void draw_ear_two_triangle(cv::Mat& img,cv::Point l_pt[3],cv::Scalar l_bgr[2],cv
 void draw_eye_two_ellipse(cv::Mat& img,cv::Point pt_lo,cv::Size sz_lo,int theta_lo,cv::Point pt_li,cv::Size sz_li,int theta_li,cv::Scalar le_bgr[2],cv::Point pt_ro,cv::Size sz_ro,int theta_ro,cv::Point pt_ri,cv::Size sz_ri,int theta_ri,cv::Scalar re_bgr[2]){
   //lo楕円外側左目
   //li楕円内側左目
+  double in_a,in_b;
 
   /// 画像，中心座標，（長径・短径），回転角度，円弧開始角度，円弧終了角度，色，線太さ，連結
+  
   cv::ellipse(img,pt_lo, sz_lo,theta_lo,0,360,le_bgr[0], -1, 8);
   cv::ellipse(img,pt_lo, sz_lo,theta_lo,0,360,cv::Scalar(0,0,0), 2, 8);
   // cout << pt_lo << " "<< sz_lo << " "<<  theta_lo << " "<< le_bgr[0] << endl;
   cv::ellipse(img,pt_li, sz_li,theta_li,0,360,le_bgr[1], -1, 8);
   cv::ellipse(img,pt_li, sz_li,theta_li,0,360,cv::Scalar(0,0,0), 2, 8);
+
+  if(which_small_num(sz_li.width,sz_li.height) == 0 ){
+    in_a = sz_li.height;
+    in_b = sz_li.width;
+  }else{
+    in_b = sz_li.height;
+    in_a = sz_li.width;
+  }
+  cv::circle(img, cv::Point(pt_li.x-(in_b/4),pt_li.y-(in_a/4)), in_b/4, cv::Scalar(255,255,255), -1, 8);
+
   // cout << pt_li << " "<< sz_li << " "<<  theta_li << " "<< le_bgr[1] << endl;
   cv::ellipse(img,pt_ro, sz_ro,theta_ro,0,360,re_bgr[0], -1, 8);
   cv::ellipse(img,pt_ro, sz_ro,theta_ro,0,360,cv::Scalar(0,0,0), 2, 8);
   // cout << pt_ro << " "<< sz_ro << " "<<  theta_ro << " "<< re_bgr[0] << endl;
   cv::ellipse(img,pt_ri, sz_ri,theta_ri,0,360,re_bgr[1], -1, 8);
   cv::ellipse(img,pt_ri, sz_ri,theta_ri,0,360,cv::Scalar(0,0,0), 2, 8);
+
+ if(which_small_num(sz_ri.width,sz_ri.height) == 0 ){
+    in_a = sz_ri.height;
+    in_b = sz_ri.width;
+  }else{
+    in_b = sz_ri.height;
+    in_a = sz_ri.width;
+  }
+  cv::circle(img, cv::Point(pt_ri.x-(in_b/4),pt_ri.y-(in_a/4)), in_b/4, cv::Scalar(255,255,255), -1, 8);
+
   // cout << pt_ri << " "<< sz_ri << " "<<  theta_ri << " "<< re_bgr[1] << endl;
 }
 

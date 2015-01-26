@@ -115,3 +115,6 @@ g++ -o new_canny_line new_canny_line.cpp -I/path/to/opencv/include -L/path/to/op
 ./avatar_drawer ./images/test8.jpg 4 7 100 209 8 110 87 165 70 190 159 60 132 209 80
 
 ./avatar_drawer ./cats_av_ex/010.jpg 2 0 120 192 4 106 69 157 70 182 159 65 119 222 80
+
+
+g++ -o eye_circle_test eye_circle_test.cpp -I/path/to/opencv/include -L/path/to/opencv/lib -lopencv_core -lopencv_highgui  -lopencv_objdetect -lopencv_features2d -lopencv_imgproc
