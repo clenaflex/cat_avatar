@@ -182,7 +182,6 @@ void detect_cat_eyes(cv::Mat cat_face,int result[2][4]){
   }
 }
 
-
 void detect_cat_mouth(cv::Mat cat_face,int result[4]){
   cv::Mat dst_cat_face = cat_face.clone();
   int img_width,img_height;
