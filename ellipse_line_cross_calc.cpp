@@ -11,6 +11,109 @@
 
 using namespace std;
 
+int max_3_v2(int a,int b,int c){
+  if(a>b){
+    if(a>c){
+      return 0;
+    }else{
+      return 2;
+    }
+
+  }else if(b>c){
+    if(b>a){
+      return 1;
+    }else{
+      return 0;
+    }
+  }else if (c>a){
+    if(c>b){
+      return 2;
+    }else{
+      return 1;
+    }
+  }else{
+    return 3;
+  } 
+}
+
+int min_3_v2(int a,int b,int c){
+  if(a>b){
+    if(c>b){
+      return 1;
+    }else{
+      return 2;
+    }
+
+  }else if(b>c){
+    if(a>c){
+      return 2;
+    }else{
+      return 0;
+    }
+  }else if (c>a){
+    if(b>a){
+      return 0;
+    }else{
+      return 1;
+    }
+  }else{
+    return 3;
+  }
+}
+
+
+void hsv_to_rgb2(int hsv[3],int rgb[3]){
+  int max = hsv[2];
+  int min = max-(max*(hsv[1]/255.0));
+  if( -1 <hsv[0] && hsv[0] <61){
+    rgb[0] = max;
+    rgb[1] = (hsv[0]/60.0)*(max-min)+min;
+    rgb[2] = min;
+  }else if(60<hsv[0] && hsv[0]<121){
+    rgb[0] = ((120 - hsv[0])/60.0)*(max-min)+min;
+    rgb[1] = max;
+    rgb[2] = min;
+  }else if(120<hsv[0] && hsv[0]<181){
+    rgb[0] = min;
+    rgb[1] = max;
+    rgb[2] = ((hsv[0]-120)/60.0 )*(max-min)+min;
+  }else if(180<hsv[0] && hsv[0]<241){
+    rgb[0] = min;
+    rgb[1] = ((240-hsv[0])/60.0)*(max-min)+min;
+    rgb[2] = max;
+  }else if(240<hsv[0] && hsv[0]<301){
+    rgb[0] = ((hsv[0]-240)/60.0)*(max-min)+min;
+    rgb[1] = min;
+    rgb[2] = max;
+  }else if(300<hsv[0] && hsv[0]<361){
+    rgb[0] = max;
+    rgb[1] = min;
+    rgb[2] = ((360-hsv[0])/60.0)*(max-min)+min; 
+  }
+}
+
+void rgb_to_hsv2(int rgb[3],int hsv[3]){
+  int max_s = max_3_v2(rgb[0],rgb[1],rgb[2]);
+  int min_s = min_3_v2(rgb[0],rgb[1],rgb[2]);
+  if (max_s == 0){
+    hsv[0] = 60 * (rgb[1]-rgb[2])/ ((rgb[max_s]-rgb[min_s])*0.1*10) ;
+  }else if (max_s == 1){
+    hsv[0] = 120 + 60 * (rgb[2]-rgb[0])/( (rgb[max_s]-rgb[min_s])*0.1*10) ;
+  }else if (max_s == 2){
+    hsv[0] = 240 + 60 * (rgb[0]-rgb[1])/((rgb[max_s]-rgb[min_s])*0.1*10);
+  }else{
+    hsv[0] = 0;
+  }
+  if(hsv[0] < 0){
+    hsv[0] +=360;
+  }
+  //S,V 's ranges are 0~255
+  hsv[1] = 255*(rgb[max_s]-rgb[min_s])/(rgb[max_s]*0.1*10);
+  hsv[2] = rgb[max_s];
+}
+
+
+
 int which_big_num(int a,int b){
   if(a<b){
     return 1;
@@ -60,7 +163,6 @@ void ellipse_line_cross_calc(double p,double q,double a,double b,double x1,doubl
   double bb = 2*la*a*a*lb -2*la*a*a*q -2*b*b*p;
   double cc = b*b*p*p + a*a*lb*lb - 2*a*a*lb*q + a*a*q*q - a*a*b*b;
   double d = bb*bb - 4*aa*cc;
-  cout << "d:" << d << endl;
   if (d > 0){
    double px = (-1* bb + sqrt(d)) / ( 2*aa );
    double mx = (-1* bb - sqrt(d)) / ( 2*aa );
@@ -74,11 +176,6 @@ void ellipse_line_cross_calc(double p,double q,double a,double b,double x1,doubl
     ans[0] = px;
     ans[1] = py;
    }
-   cout << "on-ellipse-x:" << ans[0] << " " << "on-ellipse-y:" << ans[1] << endl;
-  }else
-  {
-    cout << "判別式の値が不正です。" << endl;
-
   }
 }
 
@@ -91,7 +188,6 @@ void line_cross_point(double x1,double y1,double x2,double y2,double x3,double y
   double y = la * x + lb;
   ans[0] = x;
   ans[1] = y;
-  cout << "cross_point:" << ans[0] << " " << ans[1] << endl;
 }
 
 
@@ -153,25 +249,51 @@ void draw_face_ellipse(cv::Mat& img,double p,double q,double a,double b,cv::Scal
   all+shima:11
   hachiware:20
   hachi+shima:21
-  hachi+shima+mike:22
   pointed:30
   */
     cv::Point pt[3];
     pt[0] = cv::Point(p,q-(4*b/5));
     pt[1] = cv::Point(p+a/4,q+(b)/2);
     pt[2] = cv::Point(p-a/4,q+(b)/2);
+
+    // type += 1;
+    int rgb[3];
+    int hsv[3];
+    rgb[0] = bgr[0][2]; 
+    rgb[1] = bgr[0][1];
+    rgb[2] = bgr[0][0];
+
+    rgb_to_hsv2(rgb,hsv);
+    hsv[1] += 100;
+    hsv_to_rgb2(hsv,rgb);
    // cv::ellipse(img,cv::Point(p,q), cv::Size(a,b),0,150,270,bgr[0], -1, 4);
    // cv::ellipse(img,cv::Point(p,q), cv::Size(a,b),0,-90,30,bgr[1], -1, 4);
    // cv::ellipse(img,cv::Point(p,q), cv::Size(a,b),0,30,150,bgr[2], -1, 4);
    // cv::fillConvexPoly(img, pt, 3,bgr[2]);
-   if (type == 10){
+   if (type/10 == 1){
     cv::ellipse(img,cv::Point(p,q), cv::Size(a,b),0,180,360,bgr[0], -1, 4);
     cv::ellipse(img,cv::Point(p,q), cv::Size(a,b*1.1),0,0,180,bgr[0], -1, 4);
-   }else if(type == 20 || type == 30 ){
+    if ((type%10) == 1 ){
+      // cv::rectangle(img, cv::Point(p-a/4,b*3/4), cv::Point(300, 150), cv::Scalar(0,0,200), 3, 4);
+      // cv::rectangle(img,cv::Rect(p-(a/4),q-(b*3/4),a/2,b/2),cv::Scalar(0, 0, 255), 2);
+      cv::line(img,  cv::Point( p-(a/4),q-(b*3/4) ), cv::Point( p-(a/4)+a/10,q-(b*3/4)+b/2)   ,cv::Scalar(rgb[2],rgb[1],rgb[0]), 8, 4);
+      cv::line(img,  cv::Point( p,q-(b*3/4) ), cv::Point( p,q-(b*3/4)+b/2)   ,cv::Scalar(rgb[2],rgb[1],rgb[0]), 8, 4);
+      cv::line(img,  cv::Point( p+(a/4),q-(b*3/4) ), cv::Point( p+(a/4)-a/10,q-(b*3/4)+b/2)   ,cv::Scalar(rgb[2],rgb[1],rgb[0]), 8, 4);
+
+    }
+   }else if(type/10 == 2 || type/10 == 3){
        cv::ellipse(img,cv::Point(p,q), cv::Size(a,b),0,150,270,bgr[0], -1, 4);
        cv::ellipse(img,cv::Point(p,q), cv::Size(a,b),0,-90,30,bgr[1], -1, 4);
        cv::ellipse(img,cv::Point(p,q), cv::Size(a,b),0,30,150,bgr[2], -1, 4);
        cv::fillConvexPoly(img, pt, 3,bgr[2]);
+    if ((type%20) == 1 ){
+      // cv::rectangle(img, cv::Point(p-a/4,b*3/4), cv::Point(300, 150), cv::Scalar(0,0,200), 3, 4);
+      // cv::rectangle(img,cv::Rect(p-(a/4),q-(b*3/4),a/2,b/2),cv::Scalar(0, 0, 255), 2);
+      cv::line(img,  cv::Point( p-(a/4),q-(b*3/4) ), cv::Point( p-(a/4)+a/10,q-(b*3/4)+b/2)   ,cv::Scalar(rgb[2],rgb[1],rgb[0]), 8, 4);
+      cv::line(img,  cv::Point( p,q-(b*3/4) ), cv::Point( p,q-(b*3/4)+b/2)   ,cv::Scalar(rgb[2],rgb[1],rgb[0]), 8, 4);
+      cv::line(img,  cv::Point( p+(a/4),q-(b*3/4) ), cv::Point( p+(a/4)-a/10,q-(b*3/4)+b/2)   ,cv::Scalar(rgb[2],rgb[1],rgb[0]), 8, 4);
+
+    }
    }
 }
 
@@ -196,7 +318,6 @@ void draw_ear_two_triangle(cv::Mat& img,cv::Point l_pt[3],cv::Scalar l_bgr[2],cv
 
   l_theta_0 = atan(calc_tan(l_pt[0].x,l_pt[0].y,l_pt[2].x,l_pt[2].y))*180/3.14;
   l_theta_1 = atan(calc_tan(l_pt[1].x,l_pt[1].y,l_pt[2].x,l_pt[2].y))*180/3.14;
-  cout << "theta" << l_theta_0 << " " << l_theta_1 << endl;
   l_0_a = dist_two_point(l_pt[0].x,l_pt[0].y,l_pt[2].x ,l_pt[2].y)/2;
   l_0_b = l_0_a*2/10;
   l_1_a = dist_two_point(l_pt[1].x,l_pt[1].y,l_pt[2].x ,l_pt[2].y)/2;
@@ -232,7 +353,6 @@ void draw_ear_two_triangle(cv::Mat& img,cv::Point l_pt[3],cv::Scalar l_bgr[2],cv
 
   r_theta_0 = atan(calc_tan(r_pt[0].x,r_pt[0].y,r_pt[2].x,r_pt[2].y))*180/3.14;
   r_theta_1 = atan(calc_tan(r_pt[1].x,r_pt[1].y,r_pt[2].x,r_pt[2].y))*180/3.14;
-  cout << "theta" << r_theta_0 << " " << r_theta_1 << endl;
   r_0_a = dist_two_point(r_pt[0].x,r_pt[0].y,r_pt[2].x ,r_pt[2].y)/2.0;
   r_0_b = r_0_a*2/10.0;
   r_1_a = dist_two_point(r_pt[1].x,r_pt[1].y,r_pt[2].x ,r_pt[2].y)/2.0;
@@ -264,7 +384,6 @@ void draw_eye_two_ellipse(cv::Mat& img,cv::Point pt_lo,cv::Size sz_lo,int theta_
   
   cv::ellipse(img,pt_lo, sz_lo,theta_lo,0,360,le_bgr[0], -1, 8);
   cv::ellipse(img,pt_lo, sz_lo,theta_lo,0,360,cv::Scalar(0,0,0), 2, 8);
-  // cout << pt_lo << " "<< sz_lo << " "<<  theta_lo << " "<< le_bgr[0] << endl;
   cv::ellipse(img,pt_li, sz_li,theta_li,0,360,le_bgr[1], -1, 8);
   cv::ellipse(img,pt_li, sz_li,theta_li,0,360,cv::Scalar(0,0,0), 2, 8);
 
@@ -277,10 +396,8 @@ void draw_eye_two_ellipse(cv::Mat& img,cv::Point pt_lo,cv::Size sz_lo,int theta_
   }
   cv::circle(img, cv::Point(pt_li.x-(in_b/4),pt_li.y-(in_a/4)), in_b/4, cv::Scalar(255,255,255), -1, 8);
 
-  // cout << pt_li << " "<< sz_li << " "<<  theta_li << " "<< le_bgr[1] << endl;
   cv::ellipse(img,pt_ro, sz_ro,theta_ro,0,360,re_bgr[0], -1, 8);
   cv::ellipse(img,pt_ro, sz_ro,theta_ro,0,360,cv::Scalar(0,0,0), 2, 8);
-  // cout << pt_ro << " "<< sz_ro << " "<<  theta_ro << " "<< re_bgr[0] << endl;
   cv::ellipse(img,pt_ri, sz_ri,theta_ri,0,360,re_bgr[1], -1, 8);
   cv::ellipse(img,pt_ri, sz_ri,theta_ri,0,360,cv::Scalar(0,0,0), 2, 8);
 
@@ -292,8 +409,6 @@ void draw_eye_two_ellipse(cv::Mat& img,cv::Point pt_lo,cv::Size sz_lo,int theta_
     in_a = sz_ri.width;
   }
   cv::circle(img, cv::Point(pt_ri.x-(in_b/4),pt_ri.y-(in_a/4)), in_b/4, cv::Scalar(255,255,255), -1, 8);
-
-  // cout << pt_ri << " "<< sz_ri << " "<<  theta_ri << " "<< re_bgr[1] << endl;
 }
 
 void draw_mouth(cv::Mat& img,cv::Point pt_m,int w, int h,cv::Scalar c_m){
@@ -302,90 +417,3 @@ void draw_mouth(cv::Mat& img,cv::Point pt_m,int w, int h,cv::Scalar c_m){
   cv::line(img, cv::Point(pt_m.x+w/2, pt_m.y+h/2), cv::Point(pt_m.x+w*3/4, pt_m.y+5*h/8), cv::Scalar(0,0,0), 3, 4);  
   cv::circle(img, cv::Point(pt_m.x+w/2,pt_m.y+h/4),h/8,c_m, -1, CV_AA);
 }
-
-// int main(int argc, char** argv) {
-//    double param = 1;
-//    int p = atoi(argv[1])*param;
-//    int q = atoi(argv[2])*param;
-//    int a = atoi(argv[3])*param;
-//    int b = atoi(argv[4])*param; 
-//    // double lx1 = atoi(argv[5])*5;
-//    // double ly1 = atoi(argv[6])*5;
-//    // double lx2 = atoi(argv[7])*5;
-//    // double ly2 = atoi(argv[8])*5;
-//    // double lx3 = atoi(argv[9])*5;
-//    // double ly3 = atoi(argv[10])*5;
-//    // double lx4 = atoi(argv[11])*5;
-//    // double ly4 = atoi(argv[12])*5;
-//    // double rx1 = atoi(argv[13])*5;
-//    // double ry1 = atoi(argv[14])*5;
-//    // double rx2 = atoi(argv[15])*5;
-//    // double ry2 = atoi(argv[16])*5;
-//    // double rx3 = atoi(argv[17])*5;
-//    // double ry3 = atoi(argv[18])*5;
-//    // double rx4 = atoi(argv[19])*5;
-//    // double ry4 = atoi(argv[20])*5;
-
-//    double ans[12];
-
-//    ellipse_ear_calc(p,q,a,b,atoi(argv[5])*param,atoi(argv[6])*param,atoi(argv[7])*param,atoi(argv[8])*param,atoi(argv[9])*param,atoi(argv[10])*param,atoi(argv[11])*param,atoi(argv[12])*param,atoi(argv[13])*param,atoi(argv[14])*param,atoi(argv[15])*param,atoi(argv[16])*param,atoi(argv[17])*param,atoi(argv[18])*param,atoi(argv[19])*param,atoi(argv[20])*param,ans);
-
-//    // cv::Mat frame = cv::Mat::zeros(cv::Size(800, 800), CV_8UC3);
-//    cv::Mat frame(1000, 1000,CV_8UC3,cv::Scalar(194,194,194));
-//    cv::Point l_pt[3];
-//    cv::Point r_pt[3];
-//     l_pt[0] = cv::Point(ans[0],ans[1]);
-//     l_pt[1] = cv::Point(ans[2],ans[3]);
-//     l_pt[2] = cv::Point(ans[4],ans[5]);
-
-//     r_pt[0] = cv::Point(ans[6],ans[7]);
-//     r_pt[1] = cv::Point(ans[8],ans[9]);
-//     r_pt[2] = cv::Point(ans[10],ans[11]);
-
-//     cv::Scalar l_bgr[2];
-//     l_bgr[0] = cv::Scalar(0,0,0);
-//     l_bgr[1] = cv::Scalar(92,107,109);
-
-//     cv::Scalar r_bgr[2];
-//     r_bgr[0] = cv::Scalar(0,0,0);
-//     r_bgr[1] = cv::Scalar(92,107,109);
-
-//     draw_ear_two_triangle(frame,l_pt,l_bgr,r_pt,r_bgr);
-
-//     // cout << "pt-l1:" << "(" << ans[0] << "," << ans[1] << ")" << endl;
-//     // cout << "pt-l2:" << "(" << ans[2] << "," << ans[3] << ")" << endl;
-//     // cout << "pt-l3:" << "(" << ans[4] << "," << ans[5] << ")" << endl;
-//     // // cv::fillConvexPoly(frame, pt, 3, cv::Scalar(0,0,200));
-
-//     // // cv::fillConvexPoly(frame, pt, 3, cv::Scalar(0,0,200));
-//     // cout << "pt-r1:" << "(" << ans[6] << "," << ans[7] << ")" << endl;
-//     // cout << "pt-r2:" << "(" << ans[8] << "," << ans[9] << ")" << endl;
-//     // cout << "pt-r3:" << "(" << ans[10] << "," << ans[11] << ")" << endl;
-
-//     cv::Scalar bgr[3];
-//     bgr[0] = cv::Scalar(0,0,0);
-//     bgr[1] = cv::Scalar(0,0,0);
-//     bgr[2] = cv::Scalar(255,255,255);
-//     int type = 20;
-//    draw_face_ellipse(frame,p,q,a,b,bgr,type);
-   
-//    cv::Scalar le_bgr[2];
-//    le_bgr[0] = cv::Scalar(97,109,109);
-//    le_bgr[1] = cv::Scalar(0,0,0);
-
-//    cv::Scalar re_bgr[2];
-//    re_bgr[0] = cv::Scalar(97,109,109);
-//    re_bgr[1] = cv::Scalar(0,0,0);
-
-//    draw_eye_two_ellipse(frame,cv::Point(atoi(argv[21])*param,atoi(argv[22])*param),cv::Size(atoi(argv[23])*param,atoi(argv[24])*param),atoi(argv[25]),cv::Point(atoi(argv[26])*param,atoi(argv[27])*param),cv::Size(atoi(argv[28])*param,atoi(argv[29])*param),atoi(argv[30]),le_bgr,cv::Point(atoi(argv[31])*param,atoi(argv[32])*param),cv::Size(atoi(argv[33])*param,atoi(argv[34])*param),atoi(argv[35]),cv::Point(atoi(argv[36])*param,atoi(argv[37])*param),cv::Size(atoi(argv[38])*param,atoi(argv[39])*param),atoi(argv[40]),re_bgr);
-   
-//    cv::Scalar c_m = cv::Scalar(204,209,210);
-   
-//    draw_mouth(frame,cv::Point(atoi(argv[41])*param,atoi(argv[42])*param),atoi(argv[43])*param,atoi(argv[44])*param,c_m);
-
-//    cv::imwrite("test_img.png",frame);
-//    cv::namedWindow("Capture", CV_WINDOW_AUTOSIZE|CV_WINDOW_FREERATIO);
-//    cv::imshow("Capture", frame);
-//    cv::waitKey(0);
-// }
-
