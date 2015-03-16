@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -g -Wall
+CFLAGS = -g -w
 COPENCV = -I/path/to/opencv/include -L/path/to/opencv/lib -lopencv_core -lopencv_highgui  -lopencv_objdetect -lopencv_features2d -lopencv_imgproc
 
 ALL: avatar_drawer.o cat_eye_circle_sobel.o ellipse_line_cross_calc.o cat_ear_line_canny.o cat_classify.o detect_cat_face.o
@@ -20,5 +20,5 @@ cat_ear_line_canny.o: cat_ear_line_canny.cpp
 cat_classify.o: cat_classify.cpp
 	$(CC) $(CFLAGS) -o cat_classify.o -c cat_classify.cpp $(COPENCV)
 
-detect_cat_face.o: detect_cat_face.cpp prototype.h
+detect_cat_face.o: detect_cat_face.cpp
 	$(CC) $(CFLAGS) -o detect_cat_face.o -c detect_cat_face.cpp $(COPENCV)	 

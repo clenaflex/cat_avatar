@@ -9,14 +9,49 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <boost/lexical_cast.hpp>
-#include "prototype.h"
 
 using namespace cv;
 using namespace std;
 
-int calc_score(cv::Point r,cv::Point l,double r_sc,double l_sc){
-  calc_tan(l.x,l.y,r.x,r.y);
+double tan_calc(double x1,double y1,double x2,double y2){
+  double la = (y2 - y1)/( (x2 - x1)*10*0.1);
+  return la;
 }
+
+int calc_score(cv::Point r,cv::Point l,double r_sc,double l_sc){
+  double tan_value = tan_calc(l.x,l.y,r.x,r.y);
+  double tr_tan = atan(tan_value)*180/3.14;
+  int sc = (r_sc+l_sc)*(180 - tr_tan)/180;
+  return sc;
+}
+
+void compare_score(vector<Rect> objs_r,vector<Rect> objs_l,vector<int> weights_r,vector<int> weights_l,int result[2][4]){
+  int min_score=0;
+  int sc;
+  cv::Point r,l;
+
+  for(int m=0;m < objs_r.size();m++){
+    for(int n=0;n < objs_l.size();n++){
+      r.x = objs_r[m].x;
+      r.y = objs_r[m].y;
+      l.x = objs_l[m].x;
+      l.y = objs_l[m].y;
+      sc = calc_score(r,l,weights_r[m],weights_l[n]);
+      if(sc>min_score){
+      result[0][0] = objs_r[m].x;
+      result[0][1] = objs_r[m].y;
+      result[0][2] = objs_r[m].width;
+      result[0][3] = objs_r[m].height;
+
+      result[1][0] = objs_l[n].x;
+      result[1][1] = objs_l[n].y;
+      result[1][2] = objs_l[n].width;
+      result[1][3] = objs_l[n].height;
+      }
+    }
+  }
+}
+
 
 void wider_rect(cv::Mat src_img,double param, int result[4]){
   int img_width,img_height;
@@ -90,41 +125,49 @@ void detect_cat_ears(cv::Mat cat_face,int result[2][4]){
   const int min_neighbors(3);
   int count = 0;
   cascade.load("./cascades/cascade_ear.xml");
-  vector<Rect> objs;
-  vector<int> reject_levels;
-  vector<int> weights;
-  vector<double> level_weights;
-  cascade.detectMultiScale(r_face, objs, reject_levels, level_weights, scale_factor, min_neighbors, 0, cv::Size(r_face.cols/3.1,r_face.rows/3.1), Size(), true);
-  cv::groupRectangles(objs,weights,-1,10);
+
+  vector<Rect> objs_r,objs_l;
+  vector<Rect> objs_list_r;
+  vector<Rect> objs_list_l;
+  vector<int> reject_levels_r,reject_levels_l;
+  vector<int> weights_r,weights_l;
+  vector<double> level_weights_r,level_weights_l;
+
+  cascade.detectMultiScale(r_face, objs_r, reject_levels_r, level_weights_r, scale_factor, min_neighbors, 0, cv::Size(r_face.cols/3.1,r_face.rows/3.1), Size(), true);
+  cv::groupRectangles(objs_r,weights_r,-1,10);
   int min_y = img_height;
-  for (int n = 0; n < objs.size(); n++) {
-    if (min_y > objs[n].y ){
-      result[0][0] = objs[n].x;
-      result[0][1] = objs[n].y;
-      result[0][2] = objs[n].width;
-      result[0][3] = objs[n].height;
-      min_y = objs[n].y;
+  for (int n = 0; n < objs_r.size(); n++) {
+    if (min_y > objs_r[n].y ){
+      result[0][0] = objs_r[n].x;
+      result[0][1] = objs_r[n].y;
+      result[0][2] = objs_r[n].width;
+      result[0][3] = objs_r[n].height;
+      min_y = objs_r[n].y;
       count++;
     }
   }
 
-  cascade.detectMultiScale(l_face, objs, reject_levels, level_weights, scale_factor, min_neighbors, 0, cv::Size(l_face.cols/3.1,l_face.rows/3.1),Size(), true);
-  cv::groupRectangles(objs,weights,-1,10);
+  cascade.detectMultiScale(l_face, objs_l, reject_levels_l, level_weights_l, scale_factor, min_neighbors, 0, cv::Size(l_face.cols/3.1,l_face.rows/3.1),Size(), true);
+  cv::groupRectangles(objs_l,weights_l,-1,10);
    min_y = img_height;
-  for (int n = 0; n < objs.size(); n++) {
-    if (min_y > objs[n].y ){
-      result[1][0] = objs[n].x+img_width/2;
-      result[1][1] = objs[n].y;
-      result[1][2] = objs[n].width;
-      result[1][3] = objs[n].height;
-      min_y = objs[n].y;
+  for (int n = 0; n < objs_l.size(); n++) {
+    if (min_y > objs_l[n].y ){
+      result[1][0] = objs_l[n].x+img_width/2;
+      result[1][1] = objs_l[n].y;
+      result[1][2] = objs_l[n].width;
+      result[1][3] = objs_l[n].height;
+      min_y = objs_l[n].y;
       count++;
     }
+  }
+  if (count<1){
+    compare_score(objs_r,objs_l,weights_r,weights_l,result);
   }
 }
 
 void detect_cat_eyes(cv::Mat cat_face,int result[2][4]){
   cv::Mat dst_cat_face = cat_face.clone();
+  int count=0;
   int img_width,img_height;
   img_width = dst_cat_face.cols;
   img_height = dst_cat_face.rows;
@@ -136,38 +179,38 @@ void detect_cat_eyes(cv::Mat cat_face,int result[2][4]){
   const float scale_factor(1.1);
   const int min_neighbors(3);
   cascade.load("./cascades/cascade_eye.xml");
-  vector<Rect> objs;
+  vector<Rect> objs_r,objs_l;
   vector<Rect> objs_list_r;
   vector<Rect> objs_list_l;
-  vector<int> reject_levels;
-  vector<int> weights;
-  vector<double> level_weights;
-  cascade.detectMultiScale(r_face, objs, reject_levels, level_weights, scale_factor, min_neighbors, 0, cv::Size(l_face.cols/6,l_face.rows/6), Size(l_face.cols/2,l_face.rows/2), true);
+  vector<int> reject_levels_r,reject_levels_l;
+  vector<int> weights_r,weights_l;
+  vector<double> level_weights_r,level_weights_l;
+  cascade.detectMultiScale(r_face, objs_r, reject_levels_r, level_weights_r, scale_factor, min_neighbors, 0, cv::Size(l_face.cols/6,l_face.rows/6), Size(l_face.cols/2,l_face.rows/2), true);
   int min_y = img_height*2/3;
   int max_y = img_height*1/3;
   int min_x = img_width*2.05/(2*5);
   int max_x = img_width*9/(2*10);
-  for (int n = 0; n < objs.size(); n++) {
-    if (min_y > objs[n].y && max_y < objs[n].y && min_x < objs[n].x && max_x > objs[n].x){
-      result[0][0] = objs[n].x;
-      result[0][1] = objs[n].y;
-      result[0][2] = objs[n].width;
-      result[0][3] = objs[n].height;
-      objs_list_r.push_back(objs[n]);
+  for (int n = 0; n < objs_r.size(); n++) {
+    if (min_y > objs_r[n].y && max_y < objs_r[n].y && min_x < objs_r[n].x && max_x > objs_r[n].x){
+      result[0][0] = objs_r[n].x;
+      result[0][1] = objs_r[n].y;
+      result[0][2] = objs_r[n].width;
+      result[0][3] = objs_r[n].height;
+      objs_list_r.push_back(objs_r[n]);
     }
   }
-  cascade.detectMultiScale(l_face, objs, reject_levels, level_weights, scale_factor, min_neighbors, 0, cv::Size(l_face.cols/5.9,l_face.rows/5.9),Size(l_face.cols/2,l_face.rows/2), true);
+  cascade.detectMultiScale(l_face, objs_l, reject_levels_l, level_weights_l, scale_factor, min_neighbors, 0, cv::Size(l_face.cols/5.9,l_face.rows/5.9),Size(l_face.cols/2,l_face.rows/2), true);
    min_y = img_height*2/3;
    max_y = img_height*1/3;
    min_x = img_width*7/200;
    max_x = img_width/(2*3);
-  for (int n = 0; n < objs.size(); n++) {
-    if (min_y > objs[n].y && max_y < objs[n].y && min_x < objs[n].x && max_x > objs[n].x ){
-      result[1][0] = objs[n].x+img_width/2;
-      result[1][1] = objs[n].y;
-      result[1][2] = objs[n].width;
-      result[1][3] = objs[n].height;
-      objs_list_l.push_back(objs[n]);
+  for (int n = 0; n < objs_l.size(); n++) {
+    if (min_y > objs_l[n].y && max_y < objs_l[n].y && min_x < objs_l[n].x && max_x > objs_l[n].x ){
+      result[1][0] = objs_l[n].x+img_width/2;
+      result[1][1] = objs_l[n].y;
+      result[1][2] = objs_l[n].width;
+      result[1][3] = objs_l[n].height;
+      objs_list_l.push_back(objs_l[n]);
     }
   }
   int dif_y_min = img_height;
@@ -175,6 +218,7 @@ void detect_cat_eyes(cv::Mat cat_face,int result[2][4]){
     for(int j = 0; j < objs_list_r.size();j++ ){
       int dif_y = abs(objs_list_l[i].y+(objs_list_l[i].height/2)- (objs_list_r[j].y+(objs_list_r[j].height/2) ) );
       if(dif_y < dif_y_min){
+      count++;
       result[0][0] = objs_list_r[j].x;
       result[0][1] = objs_list_r[j].y;
       result[0][2] = objs_list_r[j].width;
@@ -187,6 +231,9 @@ void detect_cat_eyes(cv::Mat cat_face,int result[2][4]){
       dif_y_min = dif_y;
       }
     }
+  }
+  if (count<1){
+    compare_score(objs_r,objs_l,weights_r,weights_l,result);
   }
 }
 
@@ -225,4 +272,3 @@ void detect_cat_mouth(cv::Mat cat_face,int result[4]){
     result[3] = 0;
   }
 }
-
