@@ -20,5 +20,5 @@ cat_ear_line_canny.o: cat_ear_line_canny.cpp
 cat_classify.o: cat_classify.cpp
 	$(CC) $(CFLAGS) -o cat_classify.o -c cat_classify.cpp $(COPENCV)
 
-detect_cat_face.o: detect_cat_face.cpp
+detect_cat_face.o: detect_cat_face.cpp prototype.h
 	$(CC) $(CFLAGS) -o detect_cat_face.o -c detect_cat_face.cpp $(COPENCV)	 

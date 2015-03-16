@@ -9,9 +9,14 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <boost/lexical_cast.hpp>
+#include "prototype.h"
 
 using namespace cv;
 using namespace std;
+
+int calc_score(cv::Point r,cv::Point l,double r_sc,double l_sc){
+  calc_tan(l.x,l.y,r.x,r.y);
+}
 
 void wider_rect(cv::Mat src_img,double param, int result[4]){
   int img_width,img_height;
@@ -83,6 +88,7 @@ void detect_cat_ears(cv::Mat cat_face,int result[2][4]){
   CascadeClassifier cascade;
   const float scale_factor(1.1);
   const int min_neighbors(3);
+  int count = 0;
   cascade.load("./cascades/cascade_ear.xml");
   vector<Rect> objs;
   vector<int> reject_levels;
@@ -98,6 +104,7 @@ void detect_cat_ears(cv::Mat cat_face,int result[2][4]){
       result[0][2] = objs[n].width;
       result[0][3] = objs[n].height;
       min_y = objs[n].y;
+      count++;
     }
   }
 
@@ -111,6 +118,7 @@ void detect_cat_ears(cv::Mat cat_face,int result[2][4]){
       result[1][2] = objs[n].width;
       result[1][3] = objs[n].height;
       min_y = objs[n].y;
+      count++;
     }
   }
 }

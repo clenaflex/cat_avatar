@@ -334,36 +334,36 @@ int main(int argc, char** argv)
 	
 	//実験時にはこのコメントアウトを外す。実験用コードここから
 
-	std::string sub_cp = sub;
-	cv::Mat roi_img_cp = roi_img;
-	cv::Scalar face_color[3];
-	cout << sub_cp << ".jpg";
-	int type = cat_classify(roi_img_cp,cv::Point(result_eye[0][0],result_eye[0][1]),result_eye[0][2],cv::Point(result_eye[1][0],result_eye[1][1]),result_eye[1][2],cv::Point(result_mouth[0],result_mouth[1]),result_mouth[2],face_color);
+	// std::string sub_cp = sub;
+	// cv::Mat roi_img_cp = roi_img;
+	// cv::Scalar face_color[3];
+	// cout << sub_cp << ".jpg";
+	// int type = cat_classify(roi_img_cp,cv::Point(result_eye[0][0],result_eye[0][1]),result_eye[0][2],cv::Point(result_eye[1][0],result_eye[1][1]),result_eye[1][2],cv::Point(result_mouth[0],result_mouth[1]),result_mouth[2],face_color);
 	
-	if (type == 10){
-		cout << " type:" << "単色" << endl;
-	}else if(type == 11){
-		cout << " type:" << "単色＋縞" << endl;
-	}else if(type == 20){
-		cout << " type:" << "ハチワレ" << endl;
-	}else if(type == 21){
-		cout << " type:" << "ハチワレ＋縞" << endl;
-	}else if(type == 30 || type ==31){
-		cout << " type:" << "ポインテッド" << endl;
-	}
-	rectangle(roi_img_cp, cv::Rect(result_ear[0][0],result_ear[0][1],result_ear[0][2],result_ear[0][3]), Scalar(0,0,255), 8);
-	rectangle(roi_img_cp, cv::Rect(result_ear[1][0],result_ear[1][1],result_ear[1][2],result_ear[1][3]), Scalar(0,0,255), 8);
-	rectangle(roi_img_cp, cv::Rect(result_eye[0][0],result_eye[0][1],result_eye[0][2],result_eye[0][3]), Scalar(255,0,0), 8);
-	rectangle(roi_img_cp, cv::Rect(result_eye[1][0],result_eye[1][1],result_eye[1][2],result_eye[1][3]), Scalar(255,0,0), 8);
-	rectangle(roi_img_cp, cv::Rect(result_mouth[0],result_mouth[1],result_mouth[2],result_mouth[3]), Scalar(0,255,0), 8);
-	sub_cp = "detection_result/"+sub_cp + "_result" + ".jpg";
-	cv::imwrite(sub_cp, roi_img_cp);
+	// if (type == 10){
+	// 	cout << " type:" << "単色" << endl;
+	// }else if(type == 11){
+	// 	cout << " type:" << "単色＋縞" << endl;
+	// }else if(type == 20){
+	// 	cout << " type:" << "ハチワレ" << endl;
+	// }else if(type == 21){
+	// 	cout << " type:" << "ハチワレ＋縞" << endl;
+	// }else if(type == 30 || type ==31){
+	// 	cout << " type:" << "ポインテッド" << endl;
+	// }
+	// rectangle(roi_img_cp, cv::Rect(result_ear[0][0],result_ear[0][1],result_ear[0][2],result_ear[0][3]), Scalar(0,0,255), 8);
+	// rectangle(roi_img_cp, cv::Rect(result_ear[1][0],result_ear[1][1],result_ear[1][2],result_ear[1][3]), Scalar(0,0,255), 8);
+	// rectangle(roi_img_cp, cv::Rect(result_eye[0][0],result_eye[0][1],result_eye[0][2],result_eye[0][3]), Scalar(255,0,0), 8);
+	// rectangle(roi_img_cp, cv::Rect(result_eye[1][0],result_eye[1][1],result_eye[1][2],result_eye[1][3]), Scalar(255,0,0), 8);
+	// rectangle(roi_img_cp, cv::Rect(result_mouth[0],result_mouth[1],result_mouth[2],result_mouth[3]), Scalar(0,255,0), 8);
+	// sub_cp = "detection_result/"+sub_cp + "_result" + ".jpg";
+	// cv::imwrite(sub_cp, roi_img_cp);
 
 	//ここまで
 
 	//実験時にはアバター生成用のコードをコメントアウトする。ここから
 
-	// avatar_drawer(roi_img,cv::Point(result_ear[0][0],result_ear[0][1]),result_ear[0][2]-10,cv::Point(result_ear[1][0],result_ear[1][1]),result_ear[1][2]-10,cv::Point(result_eye[0][0],result_eye[0][1]),result_eye[0][2],cv::Point(result_eye[1][0],result_eye[1][1]),result_eye[1][2],cv::Point(result_mouth[0],result_mouth[1]),result_mouth[2],sub);
+	avatar_drawer(roi_img,cv::Point(result_ear[0][0],result_ear[0][1]),result_ear[0][2]-10,cv::Point(result_ear[1][0],result_ear[1][1]),result_ear[1][2]-10,cv::Point(result_eye[0][0],result_eye[0][1]),result_eye[0][2],cv::Point(result_eye[1][0],result_eye[1][1]),result_eye[1][2],cv::Point(result_mouth[0],result_mouth[1]),result_mouth[2],sub);
 
 	//ここまでをコメントアウト
 	return 0;
